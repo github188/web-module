@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ehualu.rise.dao.violate.VehicleViolateDao">
+	<resultMap id="VehicleViolate" type="com.ehualu.rise.pojo.violate.VehicleViolate">
+		<id column="ID" property="id" jdbcType="VARCHAR"/>
+		<id column="JSZH" property="jszh" jdbcType="VARCHAR"/>
+		<id column="JDSLB" property="jdslb" jdbcType="VARCHAR"/>
+		<id column="DABH" property="dabh" jdbcType="VARCHAR"/>
+		<id column="LXFS" property="lxfs" jdbcType="VARCHAR"/>
+		<id column="HPZL" property="hpzl" jdbcType="VARCHAR"/>
+		<id column="JDCSYR" property="jdcsyr" jdbcType="VARCHAR"/>
+		<id column="HPHM" property="hphm" jdbcType="VARCHAR"/>
+		<id column="ZQMJ" property="zqmj" jdbcType="VARCHAR"/>
+		<id column="WFDD" property="wfdd" jdbcType="VARCHAR"/>
+		<id column="WFSJ" property="wfsj" jdbcType="VARCHAR"/>
+		<id column="WFBH" property="wfbh" jdbcType="VARCHAR"/>
+		<id column="WFXW" property="wfxw" jdbcType="VARCHAR"/>
+		<id column="WFDDMC" property="wfddmc" jdbcType="VARCHAR"/>
+		<id column="PZHM" property="pzhm" jdbcType="VARCHAR"/>
+		<id column="XZQH" property="xzqh" jdbcType="VARCHAR"/>
+		<id column="DSRXM" property="dsrxm" jdbcType="VARCHAR"/>
+		<id column="FZJG" property="fzjg" jdbcType="VARCHAR"/>
+		<id column="LXDH" property="lxdh" jdbcType="VARCHAR"/>
+		<id column="QXDZ" property="qxdz" jdbcType="VARCHAR"/>
+		<id column="CLSJ" property="clsj" jdbcType="VARCHAR"/>
+		<id column="FKJE" property="fkje" jdbcType="VARCHAR"/>
+		<id column="JDSBH" property="jdsbh" jdbcType="VARCHAR"/>
+		<id column="WFKF" property="wfkf" jdbcType="VARCHAR"/>
+		<id column="CJJG" property="cjjg" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<select id="queryByHphm" parameterType="string" resultMap="VehicleViolate">
+		select t.id,t.jszh,t.jdslb,t.dabh,t.lxfs,t.hpzl,t.jdcsyr,t.hphm,t.zqmj,t.wfdd,t.wfsj,
+			   t.wfbh,t.wfxw,t.wfddmc,t.pzhm,t.xzqh,t.dsrxm,t.fzjg,t.lxdh,t.qxdz,t.clsj,t.fkje,t.jdsbh,t.wfkf,t.cjjg
+		 from T_PMIS_QUERYTEMP_JDCWFXX t where hphm=#{hphm} and hpzl=#{hpzl}
+	</select>
+</mapper>

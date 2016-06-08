@@ -1,0 +1,12 @@
+package com.ehualu.rise.service.sms;
+
+public interface SmsService {
+
+	/**
+	 * 短信发送
+	 * @param phone
+	 * @param msg
+	 * @return
+	 */
+	public int sendSms(String phone,String msg);
+}

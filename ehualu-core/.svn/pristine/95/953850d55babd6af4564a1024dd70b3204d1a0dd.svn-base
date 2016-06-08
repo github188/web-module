@@ -1,0 +1,18 @@
+package com.ehualu.rise.dao.violate;
+
+import com.ehualu.rise.pojo.violate.DrivingLicense;
+
+/**
+ * 驾驶证Dao接口
+ * @author Administrator
+ *
+ */
+public interface DrivingLicenseDao {
+
+	/**
+	 * 通过身份证明号码查询驾驶证信息
+	 * @param drivingLicense
+	 * @return
+	 */
+	public DrivingLicense queryLicenseBySfzmhm(DrivingLicense drivingLicense);
+}

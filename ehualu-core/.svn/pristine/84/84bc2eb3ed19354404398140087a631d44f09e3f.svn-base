@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ehualu.rise.dao.log.LoginLogDao" >
+  <resultMap id="BaseResultMap" type="com.ehualu.rise.pojo.log.LoginLog" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="mac" property="mac" jdbcType="VARCHAR" />
+    <result column="mfrs" property="mfrs" jdbcType="VARCHAR" />
+    <result column="model" property="model" jdbcType="VARCHAR" />
+    <result column="action" property="action" jdbcType="VARCHAR" />
+    <result column="opt_time" property="optTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, phone, mac, mfrs, model, action, opt_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_login_log
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_login_log
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ehualu.rise.pojo.log.LoginLog" >
+    insert into t_login_log (id, phone, mac, 
+      mfrs, model, action, 
+      opt_time)
+    values (#{id,jdbcType=INTEGER}, #{phone,jdbcType=VARCHAR}, #{mac,jdbcType=VARCHAR}, 
+      #{mfrs,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}, #{action,jdbcType=VARCHAR}, 
+      #{optTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.ehualu.rise.pojo.log.LoginLog" >
+    insert into t_login_log
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="mac != null" >
+        mac,
+      </if>
+      <if test="mfrs != null" >
+        mfrs,
+      </if>
+      <if test="model != null" >
+        model,
+      </if>
+      <if test="action != null" >
+        action,
+      </if>
+      <if test="optTime != null" >
+        opt_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="mac != null" >
+        #{mac,jdbcType=VARCHAR},
+      </if>
+      <if test="mfrs != null" >
+        #{mfrs,jdbcType=VARCHAR},
+      </if>
+      <if test="model != null" >
+        #{model,jdbcType=VARCHAR},
+      </if>
+      <if test="action != null" >
+        #{action,jdbcType=VARCHAR},
+      </if>
+      <if test="optTime != null" >
+        #{optTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ehualu.rise.pojo.log.LoginLog" >
+    update t_login_log
+    <set >
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="mac != null" >
+        mac = #{mac,jdbcType=VARCHAR},
+      </if>
+      <if test="mfrs != null" >
+        mfrs = #{mfrs,jdbcType=VARCHAR},
+      </if>
+      <if test="model != null" >
+        model = #{model,jdbcType=VARCHAR},
+      </if>
+      <if test="action != null" >
+        action = #{action,jdbcType=VARCHAR},
+      </if>
+      <if test="optTime != null" >
+        opt_time = #{optTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ehualu.rise.pojo.log.LoginLog" >
+    update t_login_log
+    set phone = #{phone,jdbcType=VARCHAR},
+      mac = #{mac,jdbcType=VARCHAR},
+      mfrs = #{mfrs,jdbcType=VARCHAR},
+      model = #{model,jdbcType=VARCHAR},
+      action = #{action,jdbcType=VARCHAR},
+      opt_time = #{optTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+   <select id="findLastLoginTime" resultType="java.sql.Date" parameterType="java.lang.String" >
+    select max(opt_time)
+    	from t_login_log
+    where phone = #{phone}
+  </select>
+</mapper>

@@ -1,0 +1,56 @@
+package com.ehualu.rise.web;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import com.alibaba.fastjson.JSON;
+import com.ehualu.cms.pojo.CmsException;
+import com.ehualu.cms.pojo.admin.User;
+import com.ehualu.rise.constants.AppConstant;
+import com.ehualu.rise.pojo.Head;
+
+public class AuthInterceptor extends HandlerInterceptorAdapter {
+	@SuppressWarnings("unchecked")
+	@Override
+	public boolean preHandle(HttpServletRequest request,
+			HttpServletResponse response, Object handler) throws Exception {
+		HttpSession session = request.getSession();
+
+		String header = (String)request.getParameter("head");
+		// 判断包头
+		if (header == null) {
+			Map<String, Object> map = new HashMap<String, Object>();
+			Head head = new Head();
+			head.setXyh(AppConstant.SERVICE_CODE_SYSTEM);
+			head.setZtm(AppConstant.ExecuteFlag.HEAD_IS_NULL);
+			map.put(AppConstant.HEAD, head);
+			response.getWriter().print(JSON.toJSONString(map));
+			return false;
+		}
+		// 判断协议号
+		String xyh = JSON.parseObject(header, Head.class).getXyh();
+		if(!AppConstant.SERVICE_CODE_REGISTER.equals(xyh)){
+			User userinfo = (User) session.getAttribute("userinfo");
+			if (userinfo == null || userinfo.getUsername() == null
+					|| !"".equals(userinfo.getUsername())){
+				Map<String, Object> map = new HashMap<String, Object>();
+				Head head = new Head();
+				head.setXyh(AppConstant.SERVICE_CODE_SYSTEM);
+				head.setZtm(AppConstant.ExecuteFlag.SESSION_EXPIRE);
+				map.put(AppConstant.HEAD, head);
+				response.getWriter().print(JSON.toJSONString(map));
+				return false;
+			}
+		}
+		
+		return super.preHandle(request, response, handler);
+	}
+}

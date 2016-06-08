@@ -1,0 +1,24 @@
+package com.ehualu.rise.dao.user;
+
+import java.util.List;
+
+import com.ehualu.rise.pojo.user.UserDriverLicense;
+
+
+public interface UserDriverLicenseDao {
+    int deleteByPrimaryKey(Integer id);
+
+    int insert(UserDriverLicense record);
+
+    int insertSelective(UserDriverLicense record);
+
+    UserDriverLicense selectByPrimaryKey(Integer id);
+
+    int updateByPrimaryKeySelective(UserDriverLicense record);
+
+    int updateByPrimaryKey(UserDriverLicense record);
+    
+    List<UserDriverLicense> queryUserDriverLicenseByUsername(String username);
+    
+    int deleteSelective(UserDriverLicense userDriverLicense);
+}

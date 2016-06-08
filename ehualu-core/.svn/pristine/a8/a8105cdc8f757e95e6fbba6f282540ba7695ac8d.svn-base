@@ -1,0 +1,223 @@
+package com.ehualu.rise.service.violate.impl;
+
+import java.text.SimpleDateFormat;
+
+import javax.inject.Inject;
+
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+
+import com.alibaba.fastjson.JSON;
+import com.ehualu.rise.constants.InterfaceConstant;
+import com.ehualu.rise.dao.violate.DrivingLicenseDao;
+import com.ehualu.rise.pojo.msg.Msg;
+import com.ehualu.rise.pojo.violate.DrivingLicense;
+import com.ehualu.rise.pojo.violate.DrivingLicenseEn;
+import com.ehualu.rise.property.PropertyConfig;
+import com.ehualu.rise.service.violate.DrivingLicenseService;
+import com.ehualu.rise.util.SecurityUtil;
+/**
+ * 驾驶证信息接口实现
+ * @author Administrator
+ *
+ */
+@Service("drivingLicenseService")
+public class DrivingLicenseServiceImpl implements DrivingLicenseService {
+
+	private static final Logger logger = Logger.getLogger(DrivingLicenseServiceImpl.class);
+	
+	private DrivingLicenseDao drivingLicenseDao;
+
+	public DrivingLicenseDao getDrivingLicenseDao() {
+		return drivingLicenseDao;
+	}
+
+	@Inject
+	public void setDrivingLicenseDao(DrivingLicenseDao drivingLicenseDao) {
+		this.drivingLicenseDao = drivingLicenseDao;
+	}
+	
+	/**
+	 * 通过身份证明号码查询驾驶证信息
+	 * @param paramJson
+	 * @return
+	 */
+	public Msg queryLicenseBySfzmhm(String paramJson){
+		logger.info("paramJson:"+paramJson);
+		DrivingLicense drivingLicense = JSON.parseObject(paramJson, DrivingLicense.class);
+		Msg msg = new Msg();
+		//判断参数是否为空
+		if(drivingLicense == null){
+			msg.setStatuCode(InterfaceConstant.PARAM_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("PARAM_IS_NULL"));
+			
+			logger.info("drivingLicense == null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		//判断身份证明号码是否为空
+		if(drivingLicense.getSfzmhm() == null || (drivingLicense.getSfzmhm()).equals("")){
+			msg.setStatuCode(InterfaceConstant.Code_002.LICENSE_SFZMHM_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("SFZMHM_IS_NULL"));
+			
+			logger.info("drivingLicense.getSfzmhm() == null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		
+		//查询驾驶证信息
+		DrivingLicense license = drivingLicenseDao.queryLicenseBySfzmhm(drivingLicense);
+		if(license == null){
+			msg.setStatuCode(InterfaceConstant.RESULT_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("RESULT_IS_NULL"));
+			
+			logger.info("RESULT IS NULL:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		
+		msg.setStatuCode(InterfaceConstant.STATU_SUCCESS);
+		msg.setMsgBody(license);
+		
+		logger.info("RESULT:"+JSON.toJSONString(msg));
+		return msg;
+	}
+	
+	
+	/**
+	 * 通过身份证明号码查询加密驾驶证信息
+	 * @param paramJson
+	 * @return
+	 */
+	public Msg queryEnLicenseBySfzmhm(String paramJson){
+		logger.info("paramJson:"+paramJson);
+		DrivingLicenseEn drivingLicenseEn = JSON.parseObject(paramJson, DrivingLicenseEn.class);
+		Msg msg = new Msg();
+		//判断参数是否为空
+		if(drivingLicenseEn == null){
+			msg.setStatuCode(InterfaceConstant.PARAM_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("PARAM_IS_NULL"));
+			
+			logger.info("drivingLicense == null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		//判断身份证明号码是否为空
+		if(drivingLicenseEn.getSfzmhm() == null || (drivingLicenseEn.getSfzmhm()).equals("")){
+			msg.setStatuCode(InterfaceConstant.Code_002.LICENSE_SFZMHM_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("SFZMHM_IS_NULL"));
+			
+			logger.info("drivingLicense.getSfzmhm() == null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		
+		//查询驾驶证信息
+		DrivingLicenseEn licenseEn = drivingLicenseDao.queryEnLicenseBySfzmhm(drivingLicenseEn);
+		if(licenseEn == null){
+			msg.setStatuCode(InterfaceConstant.RESULT_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("RESULT_IS_NULL"));
+			
+			logger.info("RESULT IS NULL:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		//转换数据类型
+		DrivingLicense dl = createDrivingLicense(licenseEn);
+		//判断是否数据类型转换
+		if(dl == null){
+			msg.setStatuCode(InterfaceConstant.DATA_CHANGE_TYPE_WRONG);
+			msg.setMsgBody(PropertyConfig.getProperty("DATA_CHANGE_TYPE_WRONG"));
+			
+			logger.info("DATA CHANGE TYPE WRONG:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		msg.setStatuCode(InterfaceConstant.STATU_SUCCESS);
+		msg.setMsgBody(dl);
+		
+		logger.info("RESULT:"+JSON.toJSONString(msg));
+		return msg;
+	}
+	
+	
+	/**
+	 * 转换数据类型
+	 * @param de
+	 * @return
+	 */
+	private DrivingLicense createDrivingLicense(DrivingLicenseEn de){
+		
+		//设置时间格式
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		//解密秘钥
+		String secretKey = PropertyConfig.getProperty("AES_SECRET_KEY");
+		
+		String dabhStr = SecurityUtil.decrypt(de.getDabh(), secretKey);
+		String sfzmhmStr = SecurityUtil.decrypt(de.getSfzmhm(), secretKey);
+		String zjcxStr = SecurityUtil.decrypt(de.getZjcx(), secretKey);
+		String syrqStr = SecurityUtil.decrypt(de.getSyrq(), secretKey);
+		String cclzrqStr = SecurityUtil.decrypt(de.getCclzrq(), secretKey);
+		String yxqsStr = SecurityUtil.decrypt(de.getYxqs(), secretKey);
+		String yxqzStr = SecurityUtil.decrypt(de.getYxqz(), secretKey);
+		String ljjfStr = SecurityUtil.decrypt(de.getLjjf(), secretKey).trim();
+		
+		logger.info("dabhStr="+dabhStr);
+		logger.info("sfzmhmStr="+sfzmhmStr);
+		logger.info("zjcxStr="+zjcxStr);
+		logger.info("syrqStr="+syrqStr);
+		logger.info("cclzrqStr="+cclzrqStr);
+		logger.info("yxqsStr="+yxqsStr);
+		logger.info("yxqzStr="+yxqzStr);
+		logger.info("ljjfStr="+ljjfStr);
+		
+		String ztStr = SecurityUtil.decrypt(de.getZt(), secretKey);
+		String xzqhStr = SecurityUtil.decrypt(de.getXzqh(), secretKey);
+		String fzjgStr = SecurityUtil.decrypt(de.getFzjg(), secretKey);
+		String gxsjStr = SecurityUtil.decrypt(de.getGxsj(), secretKey);
+		String zxbhStr = SecurityUtil.decrypt(de.getZxbh(), secretKey);
+		String sfzmmcStr = SecurityUtil.decrypt(de.getSfzmmc(), secretKey);
+		String hmcdStr = SecurityUtil.decrypt(de.getHmcd(), secretKey);
+		String xmStr = SecurityUtil.decrypt(de.getXm(), secretKey);
+		String xbStr = SecurityUtil.decrypt(de.getXb(), secretKey);
+		
+		logger.info("ztStr="+ztStr);
+		logger.info("xzqhStr="+xzqhStr);
+		logger.info("fzjgStr="+fzjgStr);
+		logger.info("gxsjStr="+gxsjStr);
+		logger.info("zxbhStr="+zxbhStr);
+		logger.info("sfzmmcStr="+sfzmmcStr);
+		logger.info("hmcdStr="+hmcdStr);
+		logger.info("xmStr="+xmStr);
+		logger.info("xbStr="+xbStr);
+		
+		
+		String csrqStr = SecurityUtil.decrypt(de.getCsrq(), secretKey);
+		String gjStr = SecurityUtil.decrypt(de.getGj(), secretKey);
+		String djzsxzqhStr = SecurityUtil.decrypt(de.getDjzsxzqh(), secretKey);
+		String djzsxxdzStr = SecurityUtil.decrypt(de.getDjzsxxdz(), secretKey);
+		String lxzsxzqhStr = SecurityUtil.decrypt(de.getLxzsxzqh(), secretKey);
+		String lxzsxxdzStr = SecurityUtil.decrypt(de.getLxzsxxdz(), secretKey);
+		String lxzsyzbmStr = SecurityUtil.decrypt(de.getLxzsyzbm(), secretKey);
+		String lxdhStr = SecurityUtil.decrypt(de.getLxdh(), secretKey);
+		String sjhmStr = SecurityUtil.decrypt(de.getSjhm(), secretKey);
+		String dzyxStr = SecurityUtil.decrypt(de.getDzyx(), secretKey);
+		String zzzmStr = SecurityUtil.decrypt(de.getZzzm(), secretKey);
+		
+		logger.info("csrqStr="+csrqStr);
+		logger.info("gjStr="+gjStr);
+		logger.info("djzsxzqhStr="+djzsxzqhStr);
+		logger.info("djzsxxdzStr="+djzsxxdzStr);
+		logger.info("lxzsxzqhStr="+lxzsxzqhStr);
+		logger.info("lxzsxxdzStr="+lxzsxxdzStr);
+		logger.info("lxzsyzbmStr="+lxzsyzbmStr);
+		logger.info("lxdhStr="+lxdhStr);
+		logger.info("sjhmStr="+sjhmStr);
+		logger.info("dzyxStr="+dzyxStr);
+		logger.info("zzzmStr="+zzzmStr);
+		try {
+			
+			DrivingLicense drivingLicense = new DrivingLicense(dabhStr,sfzmhmStr,zjcxStr,sdf.parse(syrqStr),sdf.parse(cclzrqStr),sdf.parse(yxqsStr),sdf.parse(yxqzStr),
+					Double.parseDouble((ljjfStr.equals("") || ljjfStr == null)?"0":ljjfStr),ztStr,xzqhStr,fzjgStr,sdf.parse(gxsjStr),zxbhStr,sfzmmcStr,hmcdStr,xmStr,xbStr,
+					sdf.parse(csrqStr),gjStr,djzsxzqhStr,djzsxxdzStr,lxzsxzqhStr,lxzsxxdzStr,
+					lxzsyzbmStr,lxdhStr,sjhmStr,dzyxStr,zzzmStr);
+			return drivingLicense;
+		} catch (Exception e) {
+			logger.error(e);
+			return null;
+		}
+	}
+}

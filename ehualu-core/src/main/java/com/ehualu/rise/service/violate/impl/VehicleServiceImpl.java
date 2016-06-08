@@ -1,0 +1,276 @@
+package com.ehualu.rise.service.violate.impl;
+
+import java.text.SimpleDateFormat;
+
+import javax.inject.Inject;
+
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+
+import com.alibaba.fastjson.JSON;
+import com.ehualu.rise.constants.InterfaceConstant;
+import com.ehualu.rise.dao.violate.VehicleDao;
+import com.ehualu.rise.pojo.msg.Msg;
+import com.ehualu.rise.pojo.violate.Vehicle;
+import com.ehualu.rise.pojo.violate.VehicleEn;
+import com.ehualu.rise.property.PropertyConfig;
+import com.ehualu.rise.service.violate.VehicleService;
+import com.ehualu.rise.util.SecurityUtil;
+/**
+ * 机动车信息接口实现
+ * @author Administrator
+ *
+ */
+@Service("vehicleService")
+public class VehicleServiceImpl implements VehicleService {
+
+	private static final Logger logger = Logger.getLogger(VehicleServiceImpl.class);
+	
+	private VehicleDao vehicleDao;
+
+	public VehicleDao getVehicleDao() {
+		return vehicleDao;
+	}
+
+	@Inject
+	public void setVehicleDao(VehicleDao vehicleDao) {
+		this.vehicleDao = vehicleDao;
+	}
+	
+	/**
+	 * 通过号牌查询机动车
+	 * @param paramJson
+	 * @return
+	 */
+	public Msg queryVehicleByHphm(String paramJson){
+		logger.info("paramJson:"+paramJson);
+		Vehicle vehicle = JSON.parseObject(paramJson, Vehicle.class);
+		Msg msg = new Msg();
+		//判断参数是否为空
+		if(vehicle == null){
+			msg.setStatuCode(InterfaceConstant.PARAM_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("PARAM_IS_NULL"));
+			
+			logger.info("vehicle == null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		
+		//判断号牌号码是否为空
+		if(vehicle.getHphm() == null || (vehicle.getHphm()).equals("")){
+			msg.setStatuCode(InterfaceConstant.Code_003.VEHICLE_HPHM_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("VEHICLE_HPHM_IS_NULL"));
+			
+			logger.info("vehicle.getHphm() == null"+JSON.toJSONString(msg));
+			return msg;
+		}
+		
+		Vehicle veh = vehicleDao.queryVehicleByHphm(vehicle);
+		//判断查询驾驶证信息结果
+		if(veh == null){
+			msg.setStatuCode(InterfaceConstant.RESULT_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("RESULT_IS_NULL"));
+			
+			logger.info("RESULT IS NULL:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		
+		//如果有号牌号码参数传入。进行判断
+		if(vehicle.getHpzl() != null){
+			if(!veh.getHpzl().trim().equals("") && !veh.getHpzl().equals(vehicle.getHpzl())){
+				msg.setStatuCode(InterfaceConstant.Code_001.HPZL_NO_MATCH);
+				msg.setMsgBody(PropertyConfig.getProperty("HPZL_NO_MATCH"));
+				
+				logger.info("HPZL NO MATCH:"+JSON.toJSONString(msg));
+				return msg;
+			}
+		}
+		//如果有发动机号参数传入、进行判断
+		if(vehicle.getFdjh() != null){
+			
+			if(!vehicle.getFdjh().trim().equals("") && !veh.getFdjh().substring(veh.getFdjh().length()-vehicle.getFdjh().length(), veh.getFdjh().length()).equals(vehicle.getFdjh())){
+				msg.setStatuCode(InterfaceConstant.Code_001.FDJH_NO_MATCH);
+				msg.setMsgBody(PropertyConfig.getProperty("FDJH_NO_MATCH"));
+				
+				logger.info("FDJH NO MATCH:"+JSON.toJSONString(msg));
+				return msg;
+			}
+		}
+		
+		msg.setStatuCode(InterfaceConstant.STATU_SUCCESS);
+		msg.setMsgBody(veh);
+		
+		logger.info("RESULT:"+JSON.toJSONString(msg));
+		return msg;
+	}
+	
+	/**
+	 * 通过号牌查询加密机动车
+	 * @param paramJson
+	 * @return
+	 */
+	public Msg queryEnVehicleByHphm(String paramJson){
+		logger.info("paramJson:"+paramJson);
+		VehicleEn vehicleEn = JSON.parseObject(paramJson, VehicleEn.class);
+		Msg msg = new Msg();
+		//判断参数是否为空
+		if(vehicleEn == null){
+			msg.setStatuCode(InterfaceConstant.PARAM_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("PARAM_IS_NULL"));
+			
+			logger.info("vehicle == null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		
+		//判断号牌号码是否为空
+		if(vehicleEn.getHphm() == null || (vehicleEn.getHphm()).equals("")){
+			msg.setStatuCode(InterfaceConstant.Code_003.VEHICLE_HPHM_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("VEHICLE_HPHM_IS_NULL"));
+			
+			logger.info("vehicle.getHphm() == null"+JSON.toJSONString(msg));
+			return msg;
+		}
+		
+		VehicleEn vehEn = vehicleDao.queryEnVehicleByHphm(vehicleEn);
+		//判断查询机动车信息结果
+		if(vehEn == null){
+			msg.setStatuCode(InterfaceConstant.RESULT_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("RESULT_IS_NULL"));
+			
+			logger.info("RESULT IS NULL:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		//转换数据类型
+		Vehicle veh =  createVehicle(vehEn);
+		//判断是否数据类型转换
+		if(veh == null){
+			msg.setStatuCode(InterfaceConstant.DATA_CHANGE_TYPE_WRONG);
+			msg.setMsgBody(PropertyConfig.getProperty("DATA_CHANGE_TYPE_WRONG"));
+			
+			logger.info("DATA CHANGE TYPE WRONG:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		//如果有号牌号码参数传入。进行判断
+		if(vehicleEn.getHpzl() != null){
+			if(!veh.getHpzl().trim().equals("") && !veh.getHpzl().equals(vehicleEn.getHpzl())){
+				msg.setStatuCode(InterfaceConstant.Code_001.HPZL_NO_MATCH);
+				msg.setMsgBody(PropertyConfig.getProperty("HPZL_NO_MATCH"));
+				
+				logger.info("HPZL NO MATCH:"+JSON.toJSONString(msg));
+				return msg;
+			}
+		}
+		//如果有发动机号参数传入、进行判断
+		if(vehicleEn.getFdjh() != null){
+			
+			if(!vehicleEn.getFdjh().equals("") && !veh.getFdjh().substring(veh.getFdjh().length()-vehicleEn.getFdjh().length(), veh.getFdjh().length()).equals(vehicleEn.getFdjh())){
+				msg.setStatuCode(InterfaceConstant.Code_001.FDJH_NO_MATCH);
+				msg.setMsgBody(PropertyConfig.getProperty("FDJH_NO_MATCH"));
+				
+				logger.info("FDJH NO MATCH:"+JSON.toJSONString(msg));
+				return msg;
+			}
+		}
+		msg.setStatuCode(InterfaceConstant.STATU_SUCCESS);
+		msg.setMsgBody(veh);
+		
+		logger.info("RESULT:"+JSON.toJSONString(msg));
+		return msg;
+	}
+	
+	/**
+	 * 转换数据类型
+	 * @param vehEn
+	 * @return
+	 */
+	private Vehicle createVehicle(VehicleEn vehEn){
+		//设置时间格式
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		//解密秘钥
+		String secretKey = PropertyConfig.getProperty("AES_SECRET_KEY");
+		
+		String xhStr = SecurityUtil.decrypt(vehEn.getXh(), secretKey);
+		String hpzlStr = SecurityUtil.decrypt(vehEn.getHpzl(), secretKey);
+		String hphmStr = SecurityUtil.decrypt(vehEn.getHphm(), secretKey);
+		String clpp1Str = SecurityUtil.decrypt(vehEn.getClpp1(), secretKey);
+		String clxhStr = SecurityUtil.decrypt(vehEn.getClxh(), secretKey);
+		String clsbdhStr = SecurityUtil.decrypt(vehEn.getClsbdh(), secretKey);
+		String fdjhStr = SecurityUtil.decrypt(vehEn.getFdjh(), secretKey);
+		String cllxStr = SecurityUtil.decrypt(vehEn.getCllx(), secretKey);
+		
+		logger.info("xhStr="+xhStr);
+		logger.info("hpzlStr="+hpzlStr);
+		logger.info("hphmStr="+hphmStr);
+		logger.info("clpp1Str="+clpp1Str);
+		logger.info("clxhStr="+clxhStr);
+		logger.info("clsbdhStr="+clsbdhStr);
+		logger.info("fdjhStr="+fdjhStr);
+		logger.info("cllxStr="+cllxStr);
+		
+		String csysStr = SecurityUtil.decrypt(vehEn.getCsys(), secretKey);
+		String syxzStr = SecurityUtil.decrypt(vehEn.getSyxz(), secretKey);
+		String syrStr = SecurityUtil.decrypt(vehEn.getSyr(), secretKey);
+		String ccdjrqStr = SecurityUtil.decrypt(vehEn.getCcdjrq(), secretKey);
+		String yxqzStr = SecurityUtil.decrypt(vehEn.getYxqz(), secretKey);
+		String qzbfqzStr = SecurityUtil.decrypt(vehEn.getQzbfqz(), secretKey);
+		String ztStr = SecurityUtil.decrypt(vehEn.getZt(), secretKey);
+		String fdjxhStr = SecurityUtil.decrypt(vehEn.getFdjxh(), secretKey);
+		String rlzlStr = SecurityUtil.decrypt(vehEn.getRlzl(), secretKey);
+		
+		logger.info("csysStr="+csysStr);
+		logger.info("syxzStr="+syxzStr);
+		logger.info("syrStr="+syrStr);
+		logger.info("ccdjrqStr="+ccdjrqStr);
+		logger.info("yxqzStr="+yxqzStr);
+		logger.info("qzbfqzStr="+qzbfqzStr);
+		logger.info("ztStr="+ztStr);
+		logger.info("fdjxhStr="+fdjxhStr);
+		logger.info("rlzlStr="+rlzlStr);
+		
+		
+		String plStr = SecurityUtil.decrypt(vehEn.getPl(), secretKey);
+		String glStr = SecurityUtil.decrypt(vehEn.getGl(), secretKey);
+		String zsStr = SecurityUtil.decrypt(vehEn.getZs(), secretKey);
+		String zjStr = SecurityUtil.decrypt(vehEn.getZj(), secretKey);
+		String qljStr = SecurityUtil.decrypt(vehEn.getQlj(), secretKey);
+		String hljStr = SecurityUtil.decrypt(vehEn.getHlj(), secretKey);
+		String ltsStr = SecurityUtil.decrypt(vehEn.getLts(), secretKey);
+		String zzlStr = SecurityUtil.decrypt(vehEn.getZzl(), secretKey);
+		String zbzlStr = SecurityUtil.decrypt(vehEn.getZbzl(), secretKey);
+		String hdzzlStr = SecurityUtil.decrypt(vehEn.getHdzzl(), secretKey);
+		String hdzkStr = SecurityUtil.decrypt(vehEn.getHdzk(), secretKey);
+		
+		String ccrqStr = SecurityUtil.decrypt(vehEn.getCcrq(), secretKey);
+		
+		logger.info("plStr="+plStr);
+		logger.info("glStr="+glStr);
+		logger.info("zsStr="+zsStr);
+		logger.info("zjStr="+zjStr);
+		logger.info("qljStr="+qljStr);
+		logger.info("hljStr="+hljStr);
+		logger.info("ltsStr="+ltsStr);
+		logger.info("zzlStr="+zzlStr);
+		logger.info("zbzlStr="+zbzlStr);
+		logger.info("hdzzlStr="+hdzzlStr);
+		logger.info("hdzkStr="+hdzkStr);
+		logger.info("ccrqStr="+ccrqStr);
+		try {
+			Vehicle vehicle = new Vehicle(xhStr,hpzlStr,hphmStr,clpp1Str,clxhStr,clsbdhStr,fdjhStr,
+					cllxStr,csysStr,syxzStr,syrStr,sdf.parse(ccdjrqStr),sdf.parse(yxqzStr),sdf.parse(qzbfqzStr),
+					ztStr,fdjxhStr,rlzlStr,Double.parseDouble((plStr == null||plStr.trim().equals(""))?"0":plStr),
+					Double.parseDouble((glStr == null||glStr.trim().equals(""))?"0":glStr),
+					Double.parseDouble((zsStr == null||zsStr.trim().equals(""))?"0":zsStr),
+					Double.parseDouble((zjStr == null||zjStr.trim().equals(""))?"0":zjStr),
+					Double.parseDouble((qljStr == null||qljStr.trim().equals(""))?"0":qljStr),
+					Double.parseDouble((hljStr == null||hljStr.trim().equals(""))?"0":hljStr),
+					Double.parseDouble((ltsStr == null||ltsStr.trim().equals(""))?"0":ltsStr),
+					Double.parseDouble((zzlStr == null||zzlStr.trim().equals(""))?"0":zzlStr),
+					Double.parseDouble((zbzlStr == null||zbzlStr.trim().equals(""))?"0":zbzlStr),
+					Double.parseDouble((hdzzlStr == null||hdzzlStr.trim().equals(""))?"0":hdzzlStr),
+					Double.parseDouble((hdzkStr == null||hdzkStr.trim().equals(""))?"0":hdzkStr),sdf.parse(ccrqStr));
+			return vehicle;
+		} catch (Exception e) {
+			logger.error(e);
+			return null;
+		}
+	}
+}

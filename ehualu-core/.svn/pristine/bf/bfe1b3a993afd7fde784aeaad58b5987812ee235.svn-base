@@ -1,0 +1,18 @@
+package com.ehualu.rise.dao.violate;
+
+import com.ehualu.rise.pojo.violate.Vehicle;
+
+/**
+ * 机动车Dao接口
+ * @author Administrator
+ *
+ */
+public interface VehicleDao {
+
+	/**
+	 * 通过号牌查询机动车
+	 * @param vehicle
+	 * @return
+	 */
+	public Vehicle queryVehicleByHphm(Vehicle vehicle);
+}

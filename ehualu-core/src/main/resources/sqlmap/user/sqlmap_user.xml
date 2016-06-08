@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ehualu.rise.dao.user.UserDao">
+	<resultMap id="User" type="com.ehualu.rise.pojo.user.User">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<id column="username" property="username" jdbcType="VARCHAR" />
+		<id column="nick" property="nick" jdbcType="VARCHAR" />
+		<id column="email" property="email" jdbcType="VARCHAR" />
+		<id column="phone" property="phone" jdbcType="VARCHAR" />
+		<id column="status" property="status" jdbcType="VARCHAR" />
+		<id column="create_date" property="createDate" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="queryByUsername" parameterType="string" resultMap="User">
+		select
+		u.id,u.username,u.password,u.nick,u.email,u.phone,u.status,u.create_date
+		from t_user u where u.username = #{phone}
+	</select>
+
+	<update id="updatePasswordByUsername" parameterType="string">
+		update t_user u set u.password = #{newPassword} where u.username= #{phone}
+	</update>
+
+	<insert id="insertSelective" parameterType="com.ehualu.rise.pojo.user.User">
+		insert into t_user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="user.username != null">
+				username,
+			</if>
+			<if test="user.phone != null">
+				phone,
+			</if>
+			<if test="user.nick != null">
+				nick,
+			</if>
+			<if test="user.password != null">
+				password,
+			</if>
+			<if test="user.status != null">
+				status,
+			</if>
+			<if test="user.createDate != null">
+				create_date,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="user.username != null">
+				#{user.username},
+			</if>
+			<if test="user.phone != null">
+				#{user.phone},
+			</if>
+			<if test="user.nick != null">
+				#{user.nick},
+			</if>
+			<if test="user.password != null">
+				#{user.password},
+			</if>
+			<if test="user.status != null">
+				#{user.status},
+			</if>
+			<if test="user.createDate != null">
+				#{user.createDate},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateUserLoginStatus" parameterType="string">
+		update t_user u set u.login_state = #{status} where u.username= #{phone}
+	</update>
+
+	<update id="updateUserPwd" parameterType="string">
+		update t_user u set u.password = #{password} where u.username= #{phone}
+	</update>
+
+	<update id="updateUserInfo" parameterType="com.ehualu.rise.pojo.user.User">
+		update t_user u set u.nick = #{user.nick}, u.email = #{user.email} where
+		u.username = #{user.username}
+	</update>
+</mapper>

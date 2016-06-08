@@ -1,0 +1,70 @@
+//package com.ehualu.rise.service.sms.impl;
+//
+//import org.codehaus.xfire.XFireFactory;
+//import org.codehaus.xfire.client.XFireProxyFactory;
+//import org.codehaus.xfire.service.Service;
+//import org.codehaus.xfire.service.binding.ObjectServiceFactory;
+//
+//import com.ehualu.rise.service.sms.SmsService;
+//import com.ehualu.rise.util.SmilUtil;
+//import com.ehualu.rise.util.XmlUtil;
+///**
+// * 短信发送
+// * @author Administrator
+// *
+// */
+//public class SmsServiceImpl {
+//
+//	private String url="http://hl.my2my.cn/services/esmsservice";
+//
+//	/**
+//	 * 短信发送
+//	 * @param phone
+//	 * @param msg
+//	 * @return
+//	 */
+//	public String sendSms(int type,String phone,String msg){
+//		try{
+//			Service srvcModel = new
+//
+//			ObjectServiceFactory().create(SmsService.class);
+//
+//			XFireProxyFactory factory =
+//
+//			new XFireProxyFactory(XFireFactory.newInstance().getXFire());
+//
+//			SmsService srvc = (SmsService) factory.create(srvcModel, url);
+//			String send="";
+//			//您的验证码是236598，请于3分钟内正确输入，收到信息的请在QQ上回一声【易华录】
+//			switch (type) {
+//			case 1:
+//				send=srvc.sendLongSmsAsNormal(phone, msg, "000", "", "yihualujt", "yihualujt");
+//				break;
+//			case 2:
+//				send=srvc.sendLongSmsAsXml(XmlUtil.contentXml(),"test", "123456");
+//				break;
+//			case 3:
+//				send=srvc.getSmsStates("test", "123456");
+//				break;
+//			case 4:
+//				send=srvc.sendMms(SmilUtil.insertElement(new String[]{"F:/picture/c.gif,F:/picture/b.txt","F:/picture/c.gif"}, "测试webservice接口","13810181126", "", "0"), "test", "123456");
+//				break;
+//			case 5:
+//				send=srvc.getMmsStates("test", "123456");
+//				break;
+//			case 11:
+//				send=srvc.sendSmsAsNormal("15611501900", "试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测", "000", "", "test", "123456");
+//				break;
+//			case 21:
+//				send=srvc.sendSmsAsXml(XmlUtil.contentXml(),"test", "123456");
+//				break;
+//			
+//			}
+//			System.out.println(send);
+//			return send;
+//		}catch(Exception e){
+//			e.printStackTrace();
+//			return null;
+//		}
+//	}
+//}

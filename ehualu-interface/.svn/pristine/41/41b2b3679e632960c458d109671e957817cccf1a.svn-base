@@ -1,0 +1,44 @@
+package com.ehualu.webservice.impl;
+
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
+
+import com.ehualu.rise.pojo.msg.Msg;
+import com.ehualu.rise.service.violate.VehicleViolateService;
+import com.ehualu.rise.webservice.VehicleViolationWebService;
+/**
+ * 机动车违章查询接口实现
+ * @author Administrator
+ *
+ */
+@Service("vehicleViolationWebService")
+public class VehicleViolationWebServiceImpl implements VehicleViolationWebService {
+
+	
+	private VehicleViolateService vehicleViolateService;
+	
+	
+	public VehicleViolateService getVehicleViolateService() {
+		return vehicleViolateService;
+	}
+
+	@Inject
+	public void setVehicleViolateService(VehicleViolateService vehicleViolateService) {
+		this.vehicleViolateService = vehicleViolateService;
+	}
+
+	public String sayHello(String name){
+		return "Hello Dubbo,Hello " + name;  
+	}
+	
+	/**
+	 * 查询车辆违法信息
+	 * @param paramJSON
+	 * @return
+	 */
+	public Msg queryVehicleViolate(String paramJSON){
+		return vehicleViolateService.queryVehicleViolate(paramJSON);
+	}
+}

@@ -1,0 +1,21 @@
+package com.ehualu.rise.service.sms;
+
+public interface SmsService {
+
+	/**
+	 * 短信发送
+	 * @param phone
+	 * @param msg
+	 * @return
+	 */
+	public String sendSms(String phone,String msg);
+	
+	String sendSmsAsXml(String smsPack,String cpid,String cppwd);
+	String sendSmsAsNormal(String phone,String msgcont,String spnumber,String chid,String cpid,String cppwd);
+	String sendLongSmsAsXml(String smsPack,String cpid,String cppwd);
+	String sendLongSmsAsNormal(String phone,String msgcont,String spnumber,String chid,String cpid,String cppwd);
+	String getSmsStates(String cpid,String cppwd);
+	String sendMms(String smsPack,String cpid,String cppwd);
+	String getMmsStates(String cpid,String cppwd);
+	String getMoList(String nextId,String cpid,String cppwd);
+}

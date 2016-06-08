@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	 http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	 http://code.alibabatech.com/schema/dubbo          
+     http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+     
+     
+     <!-- 提供方应用信息，用于计算依赖关系 -->  
+     <dubbo:application name="ehualu-interface-provider"/>
+     
+     <!-- 使用zookeeper注册中心暴露服务地址 -->  
+     <dubbo:registry address="${dubbbo.address}"/>  
+   
+     <!-- 用dubbo协议在20880端口暴露服务 -->  
+     <dubbo:protocol name="dubbo" port="20880" charset="UTF-8"/>
+     
+     <!-- 声明需要暴露的服务接口   机动车违章查询 -->  
+     <dubbo:service interface="com.ehualu.rise.webservice.VehicleViolationWebService" ref="vehicleViolationWebService" token="true"/>
+     
+     <!-- 声明需要暴露的服务接口   驾驶证查询 -->
+     <dubbo:service interface="com.ehualu.rise.webservice.DrivingLicenseWebService" ref="drivingLicenseWebService" token="true"/>
+     
+     <!-- 声明需要暴露的服务接口   机动车查询 -->
+     <dubbo:service interface="com.ehualu.rise.webservice.VehicleWebService" ref="vehicleWebService" token="true"/>
+     
+     <!-- 声明需要暴露的服务接口   驾驶证违章查询 -->
+     <dubbo:service interface="com.ehualu.rise.webservice.ViolationWebService" ref="violationWebService" token="true"/>
+     
+     <!-- 声明需要暴露的服务接口   驾驶证与机动车违章联合查询 -->
+     <dubbo:service interface="com.ehualu.rise.webservice.ViolationComplexWebService" ref="violationComplexWebService" token="true"/>    
+</beans>

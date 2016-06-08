@@ -1,0 +1,20 @@
+package com.ehualu.rise.dao.violate;
+
+import java.util.List;
+
+import com.ehualu.rise.pojo.violate.Violation;
+
+/**
+ * 驾驶证违法Dao接口
+ * @author Administrator
+ *
+ */
+public interface ViolationDao {
+
+	/**
+	 * 查询驾驶证违法(通过时间点，结果集数量)
+	 * @param violation
+	 * @return
+	 */
+	public List<Violation> queryViolationByJszh(Violation violation);
+}

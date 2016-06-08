@@ -1,0 +1,25 @@
+package com.ehualu.rise.web;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
+
+public class SessionContext {
+	private static final Map<String, HashMap> ctx = new HashMap<String, HashMap>();
+
+	private SessionContext() {
+	}
+
+	public static void addSessoin(String phone,HashMap map) {
+		ctx.put(phone, map);
+	}
+
+	public static void removeSession(String phone) {
+		ctx.remove(phone);
+	}
+
+	public static HashMap getSession(String phone) {
+		return ctx.get(phone);
+	}
+}

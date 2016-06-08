@@ -1,0 +1,27 @@
+package com.ehualu.rise.service.violate;
+
+import com.ehualu.rise.pojo.msg.Msg;
+
+/**
+ * 驾驶证与机动车违法联合查询业务处理
+ * @author Administrator
+ *
+ */
+public interface ViolationComplexService {
+
+	/**
+	 * 机动与驾驶证违法联合处理
+	 * @param jsonParam
+	 * @return
+	 */
+	public Msg queryViolationComplex(String paramJSON);
+	
+	/**
+	 * 机动与驾驶证违法联合处理加密数据
+	 * @param jsonParam
+	 * @return
+	 */
+	public Msg queryEnViolationComplex(String paramJSON);
+	
+	
+}

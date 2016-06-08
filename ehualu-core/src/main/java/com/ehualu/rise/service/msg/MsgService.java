@@ -1,0 +1,204 @@
+package com.ehualu.rise.service.msg;
+
+import java.util.List;
+
+import com.tencent.xinge.Message;
+import com.tencent.xinge.MessageIOS;
+
+/**
+ * 通过信鸽发送消息接口
+ * @author Administrator
+ *
+ */
+public interface MsgService {
+
+	/**
+	 * Android平台推送消息给单个设备
+	 * @param title 消息标题，Android专属
+	 * @param content 消息内容
+	 * @param token 接收消息的设备Token
+	 * @return
+	 */
+	public int pushTokenAndroid(String title,String content,String token);
+	
+	/**
+	 * Android平台推送消息给单个帐号
+	 * @param title 消息标题，Android专属
+	 * @param content 消息内容
+	 * @param account 接收消息的账号
+	 * @return
+	 */
+	public int pushAccountAndroid(String title,String content,String account);
+	
+	/**
+	 * Android平台推送消息给所有设备
+	 * @param title 消息标题，Android专属
+	 * @param content 消息内容
+	 * @return
+	 */
+	public int pushAllAndroid(String title,String content);
+	
+	/**
+	 * Android平台推送消息给标签选中设备
+	 * @param title 消息标题，Android专属
+	 * @param content 消息内容
+	 * @param tag 接收消息的设备标签
+	 * @return
+	 */
+	public int pushTagAndroid(String title,String content,String tag);
+	
+	/**
+	 * Android平台推送消息给单个设备(消息Message.TYPE_MESSAGE和通知Message.TYPE_NOTIFICATION)
+	 * @param token 推送目标设备token
+	 * @param message 定义Android平台推送消息
+	 * @return
+	 */
+	public int pushSingleDevice(String token,Message message);
+	
+	/**
+	 * Android推送消息给单个账户或别名
+	 * @param account 推送目标账号
+	 * @param message 定义Android平台推送消息
+	 * @return
+	 */
+	public int pushSingleAccount(String account,Message message);
+	
+	/**
+	 * Android推送消息给多个账户或别名
+	 * @param accountList 推送目标账号，账号数量有限制，一次100个
+	 * @param message 定义Android平台推送消息
+	 * @return
+	 */
+	public int pushAccountList(List<String> accountList,Message message);
+	
+	/**
+	 * Android推送消息给单个app的所有设备
+	 * @param message 定义Android平台推送消息
+	 * @return
+	 */
+	public int pushAllDevice(Message message);
+	
+	/**
+	 * Android推送消息给tags指定的设备
+	 * @param tagList 指定推送目标的tag列表，每个tag是一个string
+	 * @param tagsOp 多个tag的运算关系，取值为AND或OR
+	 * @param message 定义Android平台推送消息
+	 * @return
+	 */
+	public int pushTags(List<String> tagList,String tagsOp,Message message);
+	
+	/**
+	 * Android创建大批量推送消息
+	 * @param message
+	 * @return
+	 */
+	public int createMultipush(Message message);
+	/**
+	 * iOS平台推送消息给单个设备
+	 * @param content 消息内容
+	 * @param token 接收消息的设备Token
+	 * @param environment 可选值为XingeApp.IOSENV_PROD或者XingeApp.IOSENV_DEV，iOS专属
+	 * @return
+	 */
+	public int pushTokenIos(String content,String token,int environment);
+	
+	/**
+	 * iOS平台推送消息给单个帐号
+	 * @param content 消息内容
+	 * @param account 接收消息的账号
+	 * @param environment 可选值为XingeApp.IOSENV_PROD或者XingeApp.IOSENV_DEV，iOS专属
+	 * @return
+	 */
+	public int pushAccountIos(String content,String account,int environment);
+	
+	/**
+	 * iOS平台推送消息给所有设备
+	 * @param content 消息内容
+	 * @param environment 可选值为XingeApp.IOSENV_PROD或者XingeApp.IOSENV_DEV，iOS专属
+	 * @return
+	 */
+	public int pushAllIos(String content,int environment);
+	
+	/**
+	 * iOS平台推送消息给标签选中设备
+	 * @param content 消息内容
+	 * @param tag 接收消息的设备标签
+	 * @param environment 可选值为XingeApp.IOSENV_PROD或者XingeApp.IOSENV_DEV，iOS专属
+	 * @return
+	 */
+	public int pushTagIos(String content,String tag,int environment);
+	
+	/**
+	 * IOS平台推送消息给单个设备
+	 * @param token
+	 * @param message 定义iOS平台推送消息
+	 * @param environment 可选值为XingeApp.IOSENV_PROD或者XingeApp.IOSENV_DEV，iOS专属
+	 * @return
+	 */
+	public int pushSingleDeviceIos(String token,MessageIOS messageIos,int environment);
+	
+	/**
+	 * IOS推送消息给单个账户或别名 
+	 * @param account 推送目标账号
+	 * @param messageIOS 定义iOS平台推送消息
+	 * @return
+	 */
+	public int pushSingleAccountIos(String account,MessageIOS messageIOS,int environment);
+	
+	/**
+	 * IOS推送消息给多个账户或别名
+	 * @param accountList 推送目标账号，账号数量有限制，一次100个
+	 * @param messageIOS 定义iOS平台推送消息
+	 * @param environment 可选值为XingeApp.IOSENV_PROD或者XingeApp.IOSENV_DEV，iOS专属
+	 * @return
+	 */
+	public int pushAccountListIos(List<String> accountList,MessageIOS messageIOS,int environment);
+	
+	/**
+	 * IOS推送消息给单个app的所有设备
+	 * @param messageIOS 定义iOS平台推送消息
+	 * @param environment 可选值为XingeApp.IOSENV_PROD或者XingeApp.IOSENV_DEV，iOS专属
+	 * @return
+	 */
+	public int pushAllDeviceIos(MessageIOS messageIOS,int environment);
+	
+	/**
+	 * IOS推送消息给tags指定的设备
+	 * @param tagList 指定推送目标的tag列表，每个tag是一个string
+	 * @param tagsOp 多个tag的运算关系，取值为AND或OR
+	 * @param messageIOS 定义iOS平台推送消息
+	 * @param environment 可选值为XingeApp.IOSENV_PROD或者XingeApp.IOSENV_DEV，iOS专属
+	 * @return
+	 */
+	public int pushTagsIos(List<String> tagList,String tagsOp,MessageIOS messageIOS,int environment);
+	
+	/**
+	 * IOS创建大批量推送消息
+	 * @param messageIOS 定义iOS平台推送消息
+	 * @param environment 可选值为XingeApp.IOSENV_PROD或者XingeApp.IOSENV_DEV，iOS专属
+	 * @return
+	 */
+	public int createMultipushIos(MessageIOS messageIOS, int environment);
+	
+	/**
+	 * 推送消息给大批量账号(可多次)
+	 * @param pushId createMultipush接口返回的push_id
+	 * @param accountList 推送目标账号，账号数量有限制，目前为1000个
+	 * @return
+	 */
+	public int pushAccountListMultiple(int pushId, List<String> accountList);
+	
+	/**
+	 * 推送消息给大批量设备(可多次)
+	 * @param pushId createMultipush接口返回的push_id
+	 * @param deviceList 推送目标token，数量有限制，目前为1000个
+	 * @return
+	 */
+	public int pushDeviceListMultiple(int pushId, List<String> deviceList);
+	
+	/**
+	 * 查询应用覆盖的设备数
+	 * @return
+	 */
+	public int queryDeviceCount();
+}

@@ -1,0 +1,125 @@
+package com.ehualu.rise.service.violate;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import org.apache.log4j.Logger;
+
+import com.alibaba.fastjson.JSON;
+import com.ehualu.rise.constants.AppConstant;
+import com.ehualu.rise.constants.InterfaceConstant;
+import com.ehualu.rise.constants.KeyStoreRSA;
+import com.ehualu.rise.pojo.Head;
+import com.ehualu.rise.pojo.msg.Msg;
+import com.ehualu.rise.pojo.msg.SecurityMsg;
+import com.ehualu.rise.pojo.user.UserDriverLicense;
+import com.ehualu.rise.pojo.violate.DrivingLicense;
+import com.ehualu.rise.security.rsa.RSAUtils;
+import com.ehualu.rise.service.ServiceInterface;
+import com.ehualu.rise.service.user.UserDriverLicenseService;
+import com.ehualu.rise.util.SecurityUtil;
+import com.ehualu.rise.webservice.DrivingLicenseWebService;
+
+public class QueryBoundDrivingLicenseManage implements ServiceInterface{
+	private static final Logger logger = Logger
+			.getLogger(BoundDrivingLicenseManage.class);
+	
+	private DrivingLicenseWebService drivingLicenseWebService;
+
+
+
+	public DrivingLicenseWebService getDrivingLicenseWebService() {
+		return drivingLicenseWebService;
+	}
+	@Inject
+	public void setDrivingLicenseWebService(
+			DrivingLicenseWebService drivingLicenseWebService) {
+		this.drivingLicenseWebService = drivingLicenseWebService;
+	}
+	
+	private UserDriverLicenseService userDriverLicenseService;
+
+	public UserDriverLicenseService getUserDriverLicenseService() {
+		return userDriverLicenseService;
+	}
+	@Inject
+	public void setUserDriverLicenseService(
+			UserDriverLicenseService userDriverLicenseService) {
+		this.userDriverLicenseService = userDriverLicenseService;
+	}
+	@Override
+	public Map<String, Object> handle(String head, String body) {
+		Head header = JSON.parseObject(head, Head.class);
+		if (body == null) {
+			header.setZtm(AppConstant.ExecuteFlag.BODY_IS_NULL);
+			return formatResult(header, null);
+		}
+		String msgStr = null;
+		String outputStr = null;
+		byte[] decrypt = null;
+		UserDriverLicense userDrivingLicense = JSON.parseObject(body, UserDriverLicense.class);
+		List<DrivingLicense> resultList = new ArrayList<DrivingLicense>();
+		try {
+			if(userDrivingLicense.getUsername()==null || "".equals(userDrivingLicense.getUsername())){
+				header.setZtm(AppConstant.Code_04.USERNAME_IS_NULL);
+				return formatResult(header,null);
+			}
+			List<UserDriverLicense> objList = userDriverLicenseService.queryUserDriverLicenseByUsername(userDrivingLicense);
+			
+			for(UserDriverLicense obj:objList){
+				DrivingLicense drivingLicense = new DrivingLicense();
+				drivingLicense.setSfzmhm(SecurityUtil.md5(obj.getZjhm()));
+				body = JSON.toJSONString(drivingLicense);
+				byte[] encrypt = RSAUtils.encryptByPublicKey(body.getBytes(),
+						KeyStoreRSA.INTERFACE_PUBLIC_KEY);
+
+				String signature = RSAUtils.sign(encrypt,
+						KeyStoreRSA.APPSERVER_PRIVATE_KEY);
+
+				SecurityMsg message = new SecurityMsg();
+				message.setSignature(signature);
+				message.setDigest(encrypt);
+				msgStr = drivingLicenseWebService.queryEnLicenseBySfzmhm(JSON.toJSONString(message));
+				
+				SecurityMsg sMsg = JSON.parseObject(msgStr, SecurityMsg.class);
+				boolean isOK = RSAUtils.verify(sMsg.getDigest(),
+						KeyStoreRSA.INTERFACE_PUBLIC_KEY, sMsg.getSignature());
+				if (!isOK) {
+					// appServer验证签名失败
+					header.setZtm(AppConstant.ExecuteFlag.SIGN_VERIFY_WRONG_APPSERVER);
+					return formatResult(header, null);
+				}
+				System.out.println("isOK:" + isOK);
+				System.out.println("sMsg.getDigest():" + sMsg.getDigest());
+				decrypt = RSAUtils.decryptByPrivateKey(sMsg.getDigest(),
+						KeyStoreRSA.APPSERVER_PRIVATE_KEY);
+				outputStr = new String(decrypt, "gbk");
+				System.out.println("outputStr:" + outputStr);
+				Msg msg = JSON.parseObject(new String(decrypt), Msg.class);
+				drivingLicense = JSON.parseObject(msg.getMsgBody().toString(), DrivingLicense.class);
+				resultList.add(drivingLicense);
+			}
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return formatResult(header, resultList);
+	}
+
+	@Override
+	public Map<String, Object> formatResult(Object head, Object object) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put(AppConstant.HEAD, head);
+		if (object != null) {
+			map.put(AppConstant.BODY, object);
+		}
+
+		return map;
+	}
+}

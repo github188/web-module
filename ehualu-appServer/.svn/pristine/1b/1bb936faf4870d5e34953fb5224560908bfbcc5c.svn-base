@@ -1,0 +1,19 @@
+package com.ehualu.rise.service.user;
+
+import java.util.Map;
+
+import com.ehualu.rise.service.ServiceInterface;
+
+public class VerificationCodeManager implements ServiceInterface{
+
+	@Override
+	public Map<String, Object> handle(String head, String body) {
+		return null;
+	}
+
+	@Override
+	public Map<String, Object> formatResult(Object head, Object object) {
+		return null;
+	}
+
+}

@@ -1,0 +1,846 @@
+/**
+ *
+ * Copyright (c) 2012 ChinaSoft International Co., Ltd.
+ * All rights reserved.
+ * This software is the confidential and proprietary information of
+ * ChinaSoft International. ("Confidential Information").
+ * You shall not disclose such Confidential Information and shall use it
+ * only in accordance with the terms of the license agreement you entered
+ * into with ChinaSoft International.
+ *
+ * 变更历史：
+ * 2012-5-21 创建
+ */
+package com.ehualu.rise.util;
+
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
+public final class DateUtil {
+
+	/** 默认的年月日 */
+	public static final String DEFAULT_PATTERN = "yyyy-MM-dd";
+
+	/** 年月日 */
+	public static final String YYYYMMDD_PATTERN = "yyyyMMdd";
+
+	/** 年月日 */
+	public static final String YYYYMMDD2_PATTERN = "yyyy/MM/dd";
+
+	/** hour12HMSPattern年月日 时分秒 12小时制 */
+	public static final String HOUR_12HMS_PATTERN = "yyyy-MM-dd hh:mm:ss";
+
+	/** hour12HMPattern年月日 时分 12小时制 */
+	public static final String HOUR_12HM_PATTERN = "yyyy-MM-dd hh:mm";
+
+	/** hour12HPattern年月日 时 12小时制 */
+	public static final String HOUR_12H_PATTERN = "yyyy-MM-dd hh";
+
+	/** hour24HMSPattern年月日 时分秒 24小时制 */
+	public static final String HOUR_24HMS_PATTERN = "yyyy-MM-dd HH:mm:ss";
+
+	/** hour24HMSPattern年月日 时分秒 24小时制 */
+	public static final String HOUR_24HMS2_PATTERN = "yyyy_MM_dd_HH_mm_ss";
+
+	/** hour24HMPattern年月日 时分 24小时制 */
+	public static final String HOUR_24HM_PATTERN = "yyyy-MM-dd HH:mm";
+
+	/** hour24HPattern年月日 时 24小时制 */
+	public static final String HOUR_24H_PATTERN = "yyyy-MM-dd HH";
+
+	/** 1天的86400000毫秒 */
+	public static final float DAY_TO_MILLISEC = 86400000f;
+
+	/** 1天24小时 */
+	public static final int DAY_TO_HOUR = 24;
+
+	/** 1小时60分钟 */
+	public static final int HOUR_TO_MIN = 60;
+
+	/** 1分钟60秒 */
+	public static final int MIN_TO_SEC = 60;
+
+	/** 1秒1000毫秒 */
+	public static final int SEC_TO_MILLISEC = 1000;
+
+	/** 2位数的最小值 10 */
+	public static final int DOUBLE_NUMBER = 10;
+
+	public static void main(String args[]) throws ParseException {
+		System.out.println("返回当前日期:" + DateUtil.getCurrentDate());
+		System.out.println(DateUtil.addYear(new java.util.Date(), -1));
+		System.out.println(DateUtil.getTimestamp());
+		System.out.println(DateUtil.getNearByToday(-2));
+		System.out
+				.println(DateUtil.subDay(DateUtil.getCurDate(), "2013-10-16"));
+	}
+
+	/**
+	 * 返回当前日期
+	 * 
+	 * @return YYYY-MM-DD
+	 */
+	public static String getCurrentDate() {
+		java.util.Date today = new java.util.Date();
+		return format(today);
+	}
+
+	/**
+	 * 格式化输入日期YYYY-MM-DD
+	 * 
+	 * @param date
+	 * @return
+	 */
+	public static String format(java.util.Date date) {
+		return format(date, DEFAULT_PATTERN);
+	}
+
+	/**
+	 * 格式化输入日期
+	 * 
+	 * @param date
+	 * @param pattern
+	 * @return pattern
+	 */
+	public static String format(java.util.Date date, String pattern) {
+		SimpleDateFormat df = new SimpleDateFormat(pattern);
+		return df.format(date);
+	}
+
+	/**
+	 * 格式化输入日期YYYY-MM-DD
+	 * 
+	 * @param strDate
+	 * @return
+	 * @throws ParseException
+	 */
+	public static java.util.Date parse(String strDate) throws ParseException {
+		return parse(strDate, DEFAULT_PATTERN);
+	}
+
+	/**
+	 * 格式化输入日期
+	 * 
+	 * @param strDate
+	 * @param pattern
+	 * @return
+	 * @throws ParseException
+	 */
+	public static java.util.Date parse(String strDate, String pattern)
+			throws ParseException {
+		if ("99999999".equals(strDate)) {
+			strDate = "99990909";
+		}
+		SimpleDateFormat df = new SimpleDateFormat(pattern);
+		return df.parse(strDate);
+	}
+
+	/**
+	 * 获取指定月份最后一天
+	 * 
+	 */
+	public static String getEndOfMonth(String year, String month) {
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, Integer.parseInt(year));
+		cal.set(Calendar.MONTH, Integer.parseInt(month) - 1);
+		return cal.getActualMaximum(Calendar.DAY_OF_MONTH) + "";
+	}
+
+	/**
+	 * 制定YYYY-MM-DD类型日期加减天数
+	 * 
+	 * @param sdate
+	 * @param n
+	 */
+	public static String addDays(String sdate, int n) throws ParseException {
+		Calendar cal1 = Calendar.getInstance();
+		cal1.setTime(parse(sdate, DEFAULT_PATTERN));
+		cal1.add(Calendar.DATE, n);
+		return format(cal1.getTime());
+
+	}
+
+	/**
+	 * 返回今天附近天
+	 * 
+	 * @param days天数
+	 * @return
+	 */
+	public static String getNearByToday(int days) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new java.util.Date());
+		cal.add(Calendar.DATE, days);
+		return format(cal.getTime());
+	}
+
+	/**
+	 * 年加减
+	 * 
+	 * @param date
+	 * @param n
+	 * @return
+	 */
+	public static java.util.Date addYear(java.util.Date date, int n) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(Calendar.YEAR, n);
+		return cal.getTime();
+	}
+
+	/**
+	 * 月加减
+	 * 
+	 */
+	public static java.util.Date addMonth(java.util.Date date, int n) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(Calendar.MONTH, n);
+		return cal.getTime();
+	}
+
+	/**
+	 * 日加减
+	 * 
+	 */
+	public static java.util.Date addDay(java.util.Date date, int n) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(Calendar.DATE, n);
+		return cal.getTime();
+	}
+
+	/**
+	 * Description : 计算时间差， 例如返回 2天1小时4分20秒
+	 * 
+	 * @param 开始时间
+	 * @return 例如返回 2天1小时4分20秒 的字符串
+	 * @Exception *
+	 */
+	public static String daysBetween(java.util.Date startDate,
+			java.util.Date endDate) {
+		float d = endDate.getTime() - startDate.getTime();
+		float dd = d / DAY_TO_MILLISEC;
+		int ddd = (int) dd;
+
+		float hh = (dd - ddd) * DAY_TO_HOUR;
+		int hhh = (int) hh;
+
+		float mm = (hh - hhh) * HOUR_TO_MIN;
+		int mmm = (int) mm;
+
+		float ss = (mm - mmm) * MIN_TO_SEC;
+		int sss = (int) ss;
+		return ddd + "天" + hhh + "小时" + mmm + "分" + sss + "秒";
+	}
+
+	/**
+	 * 获取年
+	 * 
+	 * @param sdate
+	 * @return String
+	 * 
+	 */
+	public static String getYear(String sdate) {
+		String[] date = sdate.split("-");
+		return date[0];
+	}
+
+	/**
+	 * 获取月
+	 * 
+	 * @param sdate
+	 * @return String
+	 */
+	public static String getMonth(String sdate) {
+		String[] date = sdate.split("-");
+		return date[1];
+	}
+
+	/**
+	 * 获取日
+	 * 
+	 * @param sdate
+	 * @return String
+	 */
+	public static String getDay(String sdate) {
+		String[] date = sdate.split("-");
+		return date[2];
+	}
+
+	/**
+	 * 获取当前年
+	 * 
+	 * @return String
+	 */
+	public static String getCurrentYear() {
+		Calendar cale = Calendar.getInstance();
+		return Integer.toString(cale.get(Calendar.YEAR));
+	}
+
+	/**
+	 * 获取当前月
+	 * 
+	 * @return
+	 */
+	public static String getCurrentMonth() {
+		Calendar cale = Calendar.getInstance();
+		int month = cale.get(Calendar.MONTH);
+		month++;
+		String sMonth = Integer.toString(month);
+		if (month < DOUBLE_NUMBER) {
+			sMonth = "0" + month;
+		}
+		return sMonth;
+	}
+
+	/**
+	 * 获取当前日
+	 * 
+	 * @return
+	 * @Exception
+	 */
+	public static String getCurrentDay() {
+		Calendar c = Calendar.getInstance();
+		int date = c.get(Calendar.DATE);
+		String sDate = Integer.toString(date);
+		if (date < DOUBLE_NUMBER) {
+			sDate = "0" + date;
+		}
+		return sDate;
+	}
+
+	/**
+	 * 获取当前小时
+	 * 
+	 * @param
+	 * @return
+	 * @Exception
+	 */
+	public static String getCurrentHour() {
+		Calendar c = Calendar.getInstance();
+		int hour = c.get(Calendar.HOUR_OF_DAY);
+		String sDate = Integer.toString(hour);
+		if (hour < DOUBLE_NUMBER) {
+			sDate = "0" + hour;
+		}
+		return sDate;
+	}
+
+	/**
+	 * 获取当前分
+	 * 
+	 * @param
+	 * @return 返回分
+	 * @Exception
+	 */
+	public static String getCurrentMinute() {
+		Calendar c = Calendar.getInstance();
+		int minute = c.get(Calendar.MINUTE);
+		String sDate = Integer.toString(minute);
+		if (minute < DOUBLE_NUMBER) {
+			sDate = "0" + minute;
+		}
+		return sDate;
+	}
+
+	/**
+	 * 获取当前秒
+	 * 
+	 * @param
+	 * @return 返回秒
+	 * @Exception
+	 */
+	public static String getCurrentSecond() {
+		Calendar c = Calendar.getInstance();
+		int second = c.get(Calendar.SECOND);
+		String sDate = Integer.toString(second);
+		if (second < DOUBLE_NUMBER) {
+			sDate = "0" + second;
+		}
+		return sDate;
+	}
+
+	/**
+	 * 获取指定年
+	 * 
+	 * @return String
+	 */
+	public static String getYear(java.util.Date date) {
+		Calendar cale = Calendar.getInstance();
+		cale.setTime(date);
+		return Integer.toString(cale.get(Calendar.YEAR));
+	}
+
+	/**
+	 * 获取指定月
+	 * 
+	 * @return
+	 */
+	public static String getMonth(java.util.Date date) {
+		Calendar cale = Calendar.getInstance();
+		cale.setTime(date);
+		int month = cale.get(Calendar.MONTH);
+		month++;
+		String sMonth = Integer.toString(month);
+		if (month < DOUBLE_NUMBER) {
+			sMonth = "0" + month;
+		}
+		return sMonth;
+	}
+
+	/**
+	 * 获取指定日
+	 * 
+	 * @return
+	 * @Exception
+	 */
+	public static String getDay(java.util.Date date1) {
+		Calendar c = Calendar.getInstance();
+		c.setTime(date1);
+		int date = c.get(Calendar.DATE);
+		String sDate = Integer.toString(date);
+		if (date < DOUBLE_NUMBER) {
+			sDate = "0" + date;
+		}
+		return sDate;
+	}
+
+	/**
+	 * 获取指定小时
+	 * 
+	 * @param
+	 * @return
+	 * @Exception
+	 */
+	public static String getHour(java.util.Date date1) {
+		Calendar c = Calendar.getInstance();
+		c.setTime(date1);
+		int hour = c.get(Calendar.HOUR_OF_DAY);
+		String sDate = Integer.toString(hour);
+		if (hour < DOUBLE_NUMBER) {
+			sDate = "0" + hour;
+		}
+		return sDate;
+	}
+
+	/**
+	 * 获取指定分
+	 * 
+	 * @param
+	 * @return 返回分
+	 * @Exception
+	 */
+	public static String getMinute(java.util.Date date1) {
+		Calendar c = Calendar.getInstance();
+		c.setTime(date1);
+		int minute = c.get(Calendar.MINUTE);
+		String sDate = Integer.toString(minute);
+		if (minute < DOUBLE_NUMBER) {
+			sDate = "0" + minute;
+		}
+		return sDate;
+	}
+
+	/**
+	 * 获取指定秒
+	 * 
+	 * @param
+	 * @return 返回秒
+	 * @Exception
+	 */
+	public static String getSecond(java.util.Date date1) {
+		Calendar c = Calendar.getInstance();
+		c.setTime(date1);
+		int second = c.get(Calendar.SECOND);
+		String sDate = Integer.toString(second);
+		if (second < DOUBLE_NUMBER) {
+			sDate = "0" + second;
+		}
+		return sDate;
+	}
+
+	/**
+	 * 
+	 * 当前日期及时间"####-##-## ##:##:##"
+	 * 
+	 * @param
+	 * @return
+	 * @Exception
+	 */
+	public static String getCurDateTime() {
+		return getCurDate() + " " + getCurTime();
+	}
+
+	/**
+	 * 
+	 * 得到当前日期"####-##-##"
+	 * 
+	 * @param
+	 * @return 当前日期"####-##-##"
+	 * @Exception
+	 */
+	public static String getCurDate() {
+		return getCurrentYear() + "-" + getCurrentMonth() + "-"
+				+ getCurrentDay();
+	}
+
+	/**
+	 * 
+	 * 得到当前日期"####-##"
+	 * 
+	 * @param
+	 * @return 当前日期"####-##"
+	 * @Exception
+	 */
+	public static String getCurYearMonth() {
+		return getCurrentYear() + "-" + getCurrentMonth();
+	}
+
+	/**
+	 * 
+	 * 得到当前时间"##:##:##"
+	 * 
+	 * @param
+	 * @return 当前时间"##:##:##"
+	 * @Exception
+	 */
+	public static String getCurTime() {
+		return getCurrentHour() + ":" + getCurrentMinute() + ":"
+				+ getCurrentSecond();
+	}
+
+	/**
+	 * 
+	 * 得到当前时间"##:##"
+	 * 
+	 * @param
+	 * @return 当前时间"##:##"
+	 * @Exception
+	 */
+	public static String getCurHourMinute() {
+		return getCurrentHour() + ":" + getCurrentMinute();
+	}
+
+	/**
+	 * 
+	 * 当前日期及时间"####-##-## ##:##:##"
+	 * 
+	 * @param
+	 * @return
+	 * @Exception
+	 */
+	public static java.util.Date getCurrentTime() throws ParseException {
+		return DateUtil.parse(DateUtil.getCurDateTime(), HOUR_24HMS_PATTERN);
+	}
+
+	/**
+	 * Timestamp2String
+	 * 
+	 * @param time
+	 * @param pattern
+	 * @return
+	 */
+	public static String Timestamp2String(Timestamp time, String pattern) {
+		return format(time, pattern);
+	}
+
+	/**
+	 * 获取当前时间java.sql.Date类型YYYY-MM-DD
+	 * 
+	 * @return
+	 */
+	public static java.sql.Date getSqlDate() {
+		return new java.sql.Date(new java.util.Date().getTime());
+	}
+
+	/**
+	 * 
+	 * 当前日期及时间"####-##-## ##:##:##"
+	 * 
+	 * @param
+	 * @return
+	 * @Exception
+	 */
+	public static java.sql.Timestamp getTimestamp() {
+		return new java.sql.Timestamp(new java.util.Date().getTime());
+	}
+
+	/**
+	 * java.util.Date转换java.sql.Date类型
+	 * 
+	 * @return
+	 */
+	public static java.sql.Date getSqlDate(java.util.Date date) {
+		return new java.sql.Date(date.getTime());
+	}
+
+	/**
+	 * 根据pattern将日期字符日期转换为java.sql.Date 如果传入日期为 99999999 将传入日期转换为99990909进行处理
+	 * 
+	 * @param strDate
+	 * @param pattern
+	 * @return
+	 * @throws ParseException
+	 */
+	public static java.sql.Date transformStringDate(String strDate,
+			String pattern) {
+		if ("99999999".equals(strDate)) {
+			strDate = "99990909";
+		}
+		SimpleDateFormat df = new SimpleDateFormat(pattern);
+		java.sql.Date rtnDate = null;
+		java.util.Date date = new java.util.Date();
+		boolean hasError = false;
+		try {
+			date = df.parse(strDate);
+		} catch (Exception e) {
+			// e.printStackTrace();
+			hasError = true;
+		}
+		if (hasError) {
+			return null;
+		}
+		rtnDate = new java.sql.Date(date.getTime());
+		return rtnDate;
+	}
+
+	/**
+	 * 根据pattern将日期字符日期转换为java.sql.Date 如果传入日期为 99999999 将传入日期转换为99990909进行处理
+	 * 
+	 * @param strDate
+	 * @param pattern
+	 * @return
+	 * @throws ParseException
+	 */
+	public static java.sql.Timestamp transformStringTimestamp(String strDate,
+			String pattern) {
+		if ("99999999".equals(strDate)) {
+			strDate = "99990909";
+		}
+		SimpleDateFormat df = new SimpleDateFormat(pattern);
+		java.sql.Timestamp rtnDate = null;
+		java.util.Date date = new java.util.Date();
+		boolean hasError = false;
+		try {
+			date = df.parse(strDate);
+		} catch (Exception e) {
+			// e.printStackTrace();
+			hasError = true;
+		}
+		if (hasError) {
+			return null;
+		}
+		rtnDate = new java.sql.Timestamp(date.getTime());
+		return rtnDate;
+	}
+
+	/**
+	 * 日期相减
+	 * 
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 * @throws ParseException
+	 */
+	public static long subDay(String startDate, String endDate)
+			throws ParseException {
+		java.util.Date sDate = parse(startDate);
+		java.util.Date eDate = parse(endDate);
+		return (eDate.getTime() - sDate.getTime())
+				/ (DAY_TO_HOUR * HOUR_TO_MIN * MIN_TO_SEC * SEC_TO_MILLISEC);
+	}
+
+	/**
+	 * 日期相减
+	 * 
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 * @throws ParseException
+	 */
+	public static long subDay(java.util.Date startDate, java.util.Date endDate)
+			throws ParseException {
+		return (endDate.getTime() - startDate.getTime())
+				/ (DAY_TO_HOUR * HOUR_TO_MIN * MIN_TO_SEC * SEC_TO_MILLISEC);
+	}
+
+	/**
+	 * 计算年龄
+	 * 
+	 * @param birthDay
+	 * @return
+	 * @throws Exception
+	 */
+	public static int getAge(java.util.Date birthDay) throws Exception {
+		Calendar cal = Calendar.getInstance();
+		if (cal.before(birthDay)) {
+			throw new Exception("生日大于当前时间！");
+		}
+		int yearNow = cal.get(Calendar.YEAR);
+		int monthNow = cal.get(Calendar.MONTH);
+		int dayOfMonthNow = cal.get(Calendar.DAY_OF_MONTH);
+
+		cal.setTime(birthDay);
+		int yearBirth = cal.get(Calendar.YEAR);
+		int monthBirth = cal.get(Calendar.MONTH);
+		int dayOfMonthBirth = cal.get(Calendar.DAY_OF_MONTH);
+
+		int age = yearNow - yearBirth;
+		if (monthNow <= monthBirth) {
+			if (monthNow == monthBirth) {
+				if (dayOfMonthNow < dayOfMonthBirth) {
+					age--;
+				}
+			} else {
+				age--;
+			}
+		}
+		return age;
+	}
+
+	/**
+	 * 取得两个日期月份的差值,不考虑具体日
+	 * 
+	 * @param beginDate
+	 * @param endDate
+	 * @return
+	 */
+	public static int getDiffMonth(java.util.Date beginDate,
+			java.util.Date endDate) {
+		// 定义返回月份差值
+		int diffMonth = -1;
+		// 如果开始日期大于结束日期，返回-1
+		if (beginDate.getTime() - endDate.getTime() > 0) {
+			return diffMonth;
+		}
+		// 开始时间
+		Calendar calendarBegin = Calendar.getInstance();
+		calendarBegin.setTime(beginDate);
+		// 结束时间
+		Calendar calendarEnd = Calendar.getInstance();
+		calendarEnd.setTime(endDate);
+
+		// 开始年
+		int beginYear = calendarBegin.get(Calendar.YEAR);
+		// 开始月
+		int beginMonth = calendarBegin.get(Calendar.MONTH);
+		// 结束年
+		int endYear = calendarEnd.get(Calendar.YEAR);
+		// 结束月
+		int endMonth = calendarEnd.get(Calendar.MONTH);
+
+		// 如果开始年等于结束年，直接返回月份差值
+		if (beginYear == endYear) {
+			diffMonth = endMonth - beginMonth;
+		} else {
+			// 如果开始年不等于结束年
+			diffMonth = (endYear - beginYear) * 12 + (endMonth - beginMonth);
+
+		}
+		return diffMonth;
+	}
+
+	/**
+	 * 根据传入时间，返回FileNet中对应的Number的时间类型，
+	 * 
+	 * 
+	 * @Exception
+	 * 
+	 * @param strDate
+	 *            要转换的日期
+	 * @param pattern
+	 *            格式参考<code>DateUtil 的静态常量</code>
+	 * @return long
+	 * @author 张志刚
+	 * @throws ParseException
+	 */
+	public static long getFileNetDateNumber(String strDate, String pattern)
+			throws ParseException {
+		long rtnLong = 0;
+		SimpleDateFormat df = new SimpleDateFormat(pattern);
+		java.util.Date date = df.parse(strDate);
+		TimeZone tz = TimeZone.getTimeZone("Asia/Shanghai");
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeZone(tz);
+		calendar.setTime(date);
+		rtnLong = calendar.getTimeInMillis() / 1000;
+		return rtnLong;
+	}
+
+	/**
+	 * 是否闰年
+	 * 
+	 * @param year
+	 * @return
+	 */
+	public static boolean isLeapYear(int year) {
+		final int case1 = 4;
+		final int case2 = 100;
+		final int case3 = 400;
+		return ((year % case1 == 0 && year % case2 != 0) || year % case3 == 0);
+	}
+
+	/**
+	 * 取得当前系统时间，并且转换成L/A通用识别的日期格式 YYYYMMDD
+	 * 
+	 * @return
+	 * @throws ParseException
+	 */
+	public static String getLaFomartDate() throws ParseException {
+		return DateUtil.format(new Date(), DateUtil.YYYYMMDD_PATTERN);
+	}
+
+	/**
+	 * 取得当前系统时间，并且转换成L/A通用识别的日期格式 YYYYMMDD
+	 * 
+	 * @return
+	 * @throws ParseException
+	 */
+	public static String getLaFomartDate(java.sql.Date date)
+			throws ParseException {
+		if (null == date) {
+			return "-1";
+		}
+		return DateUtil.format(new Date(date.getTime()),
+				DateUtil.YYYYMMDD_PATTERN);
+	}
+	/**
+	 * 获得两个时间间隔分钟数
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
+	public static long subMin(java.sql.Timestamp startDate, java.sql.Timestamp endDate){
+		long nm = 1000*60;//一分钟的毫秒数
+		long diff = endDate.getTime()-startDate.getTime();
+		return diff/nm;
+	}
+	
+	/**
+	 * 按照yyyy-MM-dd HH:mm:ss的格式，日期转字符串
+	 * @param date
+	 * @return yyyy-MM-dd HH:mm:ss
+	 */
+	public static String date2Str(Date date){
+		return date2Str(date,"yyyy-MM-dd HH:mm:ss");
+	}
+	
+	/**
+	 * 按照参数format的格式，日期转字符串
+	 * @param date
+	 * @param format
+	 * @return
+	 */
+	public static String date2Str(Date date,String format){
+		if(date!=null){
+			SimpleDateFormat sdf = new SimpleDateFormat(format);
+			return sdf.format(date);
+		}else{
+			return "";
+		}
+	}
+}

@@ -1,0 +1,187 @@
+package com.ehualu.rise.service.violate.impl;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+
+import com.alibaba.fastjson.JSON;
+import com.ehualu.rise.constants.InterfaceConstant;
+import com.ehualu.rise.dao.violate.VehicleViolateDao;
+import com.ehualu.rise.pojo.msg.Msg;
+import com.ehualu.rise.pojo.violate.VehicleViolate;
+import com.ehualu.rise.property.PropertyConfig;
+import com.ehualu.rise.service.violate.VehicleViolateService;
+/**
+ * 
+ * @author Administrator
+ * 车辆违法接口实现
+ */
+@Service("vehicleViolateService")
+public class VehicleViolateServiceImpl implements VehicleViolateService {
+
+	private static final Logger logger = Logger.getLogger(VehicleViolateServiceImpl.class);
+	
+	private VehicleViolateDao vehicleViolateDao;
+	
+	
+	public VehicleViolateDao getVehicleViolateDao() {
+		return vehicleViolateDao;
+	}
+
+	@Inject
+	public void setVehicleViolateDao(VehicleViolateDao vehicleViolateDao) {
+		this.vehicleViolateDao = vehicleViolateDao;
+	}
+	
+	/**
+	 * 查询车辆违法信息
+	 * @param paramJSON
+	 * @return
+	 */
+	public Msg queryVehicleViolate(String paramJSON){
+		logger.info("paramJSON:"+paramJSON);
+		VehicleViolate vehVio = JSON.parseObject(paramJSON, VehicleViolate.class);
+		Msg msg = new Msg();
+		//判断参数是否为空
+		if(vehVio == null){
+			msg.setStatuCode(InterfaceConstant.PARAM_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("PARAM_IS_NULL"));
+			logger.info("vehVio == null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		//判断参数中号牌号码是否为空
+		if(vehVio.getHphm() == null){
+			msg.setStatuCode(InterfaceConstant.Code_001.HPHM_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("HPHM_IS_NULL"));
+			logger.info("vehVio.getHphm() == null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		//查询违法信息
+		List<VehicleViolate> list = vehicleViolateDao.queryByHphm(vehVio.getHphm());
+		if(list.size() == 0){
+			msg.setStatuCode(InterfaceConstant.RESULT_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("RESULT_IS_NULL"));
+			logger.info("VehicleViolate is null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		//判断号牌种类
+		if(!(vehVio.getHpzl()).equals(list.get(0).getHpzl())){
+			msg.setStatuCode(InterfaceConstant.Code_001.HPZL_NO_MATCH);
+			msg.setMsgBody(PropertyConfig.getProperty("HPZL_NO_MATCH"));
+			logger.info("HPZL IS NOT MATCH:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		String fdjh=null;//发动机号
+		for(int i=0;i<list.size();i++){
+			if(list.get(i).getFdjh() != null){
+				fdjh = list.get(i).getFdjh();
+				break;
+			}
+		}
+		//判断结果集中发动机号是否为空
+		if(fdjh == null){
+			msg.setStatuCode(InterfaceConstant.Code_001.FDJH_RESULT_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("FDJH_RESULT_NULL"));
+			logger.info("FDJH RESULT NULL:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		//判断发动机号
+		if(!(vehVio.getFdjh()).equals(fdjh.substring(fdjh.length()-6, fdjh.length()))){
+			msg.setStatuCode(InterfaceConstant.Code_001.FDJH_NO_MATCH);
+			msg.setMsgBody(PropertyConfig.getProperty("FDJH_NO_MATCH"));
+			logger.info("FDJH IS NOT MATCH:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		msg.setMsgBody(list);
+		msg.setStatuCode(InterfaceConstant.STATU_SUCCESS);
+		
+		logger.info("RESULT:"+JSON.toJSONString(msg));
+		return msg;
+	}
+	
+	
+	/**
+	 * 根据号牌号码查询机动车违法(通过时间点，结果集数量)
+	 * @param paramJson
+	 * @return
+	 */
+	public Msg queryViolateByHphm(String paramJson){
+		logger.info("paramJSON:"+paramJson);
+		VehicleViolate vehVio = JSON.parseObject(paramJson, VehicleViolate.class);
+		Msg msg = new Msg();
+		//判断参数是否为空
+		if(vehVio == null){
+			msg.setStatuCode(InterfaceConstant.PARAM_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("PARAM_IS_NULL"));
+			logger.info("vehVio == null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		//判断参数中号牌号码是否为空
+		if(vehVio.getHphm() == null || (vehVio.getHphm()).equals("")){
+			msg.setStatuCode(InterfaceConstant.Code_001.HPHM_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("HPHM_IS_NULL"));
+			logger.info("vehVio.getHphm() == null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		
+		//判断参数中号牌种类是否为空
+		if(vehVio.getHpzl() == null || (vehVio.getHpzl()).equals("")){
+			msg.setStatuCode(InterfaceConstant.Code_001.HPZL_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("HPZL_IS_NULL"));
+			logger.info("vehVio.getHpzl() == null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		
+		//判断参数中号牌种类是否为空
+		if(vehVio.getFdjh() == null || (vehVio.getFdjh()).equals("")){
+			msg.setStatuCode(InterfaceConstant.Code_001.FDJH_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("FDJH_IS_NULL"));
+			logger.info("vehVio.getFdjh() == null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		//查询违法信息
+		List<VehicleViolate> list = vehicleViolateDao.queryViolateByHphm(vehVio);
+		if(list.size() == 0){
+			msg.setStatuCode(InterfaceConstant.RESULT_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("RESULT_IS_NULL"));
+			logger.info("VehicleViolate is null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		//判断号牌种类
+		if(!(vehVio.getHpzl()).equals(list.get(0).getHpzl())){
+			msg.setStatuCode(InterfaceConstant.Code_001.HPZL_NO_MATCH);
+			msg.setMsgBody(PropertyConfig.getProperty("HPZL_NO_MATCH"));
+			logger.info("HPZL IS NOT MATCH:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		String fdjh=null;//发动机号
+		for(int i=0;i<list.size();i++){
+			if(list.get(i).getFdjh() != null){
+				fdjh = list.get(i).getFdjh();
+				break;
+			}
+		}
+		//判断结果集中发动机号是否为空
+		if(fdjh == null){
+			msg.setStatuCode(InterfaceConstant.Code_001.FDJH_RESULT_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("FDJH_RESULT_NULL"));
+			logger.info("FDJH RESULT NULL:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		//判断发动机号
+		if(!(vehVio.getFdjh()).equals(fdjh.substring(fdjh.length()-6, fdjh.length()))){
+			msg.setStatuCode(InterfaceConstant.Code_001.FDJH_NO_MATCH);
+			msg.setMsgBody(PropertyConfig.getProperty("FDJH_NO_MATCH"));
+			logger.info("FDJH IS NOT MATCH:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		msg.setMsgBody(list);
+		msg.setStatuCode(InterfaceConstant.STATU_SUCCESS);
+		
+		logger.info("RESULT:"+JSON.toJSONString(msg));
+		return msg;
+	}
+}

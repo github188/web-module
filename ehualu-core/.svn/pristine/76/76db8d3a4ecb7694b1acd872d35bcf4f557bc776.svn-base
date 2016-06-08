@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ehualu.rise.dao.topic.TopicRiseDao">
+	<!-- 文章对象 -->
+	<resultMap id="Topic" type="com.ehualu.rise.pojo.topic.Topic">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<id column="imgId" property="imgId" jdbcType="VARCHAR" />
+		<id column="type" property="type" jdbcType="VARCHAR" />
+		<id column="title" property="title" jdbcType="VARCHAR" />
+		<id column="publish_date" property="publishTimeDate" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="listTopics" resultMap="Topic" parameterType="com.ehualu.rise.pojo.topic.Topic" >
+		<![CDATA[select t.* from (select tp.id id,tp.publish_date publish_date,ta.new_name imgId,tc.type type,tp.title title
+		from t_topic tp left join t_attachment ta on tp.id = ta.tid,t_channel tc where tp.cid = tc.id 
+		  and tc.type = #{topic.type} and tp.publish_date <= #{topic.publishTimeDate}
+		 order by tp.publish_date desc) t limit 0,#{topic.count}]]>
+	</select>
+	
+</mapper>

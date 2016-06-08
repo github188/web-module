@@ -1,0 +1,107 @@
+package com.ehualu.rise.service.user;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpSession;
+
+import com.alibaba.fastjson.JSON;
+import com.ehualu.rise.constants.AppConstant;
+import com.ehualu.rise.pojo.Head;
+import com.ehualu.rise.pojo.sms.SmsRecord;
+import com.ehualu.rise.pojo.user.User;
+import com.ehualu.rise.property.PropertyConfig;
+import com.ehualu.rise.service.ServiceInterface;
+import com.ehualu.rise.service.sms.SmsService;
+import com.ehualu.rise.util.DateUtil;
+import com.ehualu.rise.util.RandomCodeUtil;
+import com.ehualu.rise.util.SmsUtil;
+import com.ehualu.rise.web.SessionContext;
+
+public class VerificationCodeManager implements ServiceInterface{
+	private UserService userService;
+	
+	public UserService getUserService() {
+		return userService;
+	}
+
+	@Inject
+	public void setUserService(UserService userService) {
+		this.userService = userService;
+	}
+	
+	private SmsService smsService;
+	
+	public SmsService getSmsService() {
+		return smsService;
+	}
+	@Inject
+	public void setSmsService(SmsService smsService) {
+		this.smsService = smsService;
+	}
+
+	@Override
+	public Map<String, Object> handle(String head, String body) {
+		Head header = JSON.parseObject(head, Head.class);
+		if(body == null){
+			header.setZtm(AppConstant.ExecuteFlag.BODY_IS_NULL);
+			return formatResult(header, null);
+		}
+		User usr = JSON.parseObject(body, User.class);
+		User user = userService.queryByUserName(usr.getPhone());
+		if(AppConstant.REGISTER_SEND_VERIFECODE.equals(usr.getFlag())){
+			//验证用户是否重复注册
+			if(user != null){
+				header.setZtm(AppConstant.Code_01.USER_DUPLIREGISTER_ERROR);
+				return formatResult(header, null);
+			}
+		}
+		if(AppConstant.FINDPWD_SEND_VERIFECODE.equals(usr.getFlag())){
+			//如果用户是否不存在
+			if(user == null){
+				header.setZtm(AppConstant.Code_01.USER_NOTEXISTS_ERROR);
+				return formatResult(header, null);
+			}
+		}
+		
+		String authenCode = RandomCodeUtil.getRandomCode();
+		System.out.print("====================验证码生成成功："+authenCode+"====================");
+		
+		String sms_msg = PropertyConfig.getProperty(AppConstant.SMS_MESSAGE_KEY).replaceAll("0000", authenCode);
+		SmsRecord record = new SmsRecord();
+		record.setPhone(usr.getPhone());
+		record.setContent(sms_msg);
+		record.setFlag(usr.getFlag());
+		String result = smsService.sendSmsEmay(record);
+		if(!AppConstant.SMS_SEND_SUCCESS.equals(result)){
+			//验证码发送失败
+			header.setZtm(AppConstant.Code_01.AUTHENCODE_SEND_ERROR);
+			return formatResult(header, null);
+		}
+	
+		//smsService.sendSms(usr.getPhone(), sms_msg);
+		//生成验证码存入session
+		HashMap map = new HashMap();
+		map.put("authenCode", authenCode);
+		
+		SessionContext.addCache(usr.getPhone(), map);
+		
+		//将验证码发送给用户
+		
+		//获得session
+		return formatResult(header, null);
+	}
+
+	@Override
+	public Map<String, Object> formatResult(Object head, Object object) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put(AppConstant.HEAD, head);
+		if(object != null){
+			map.put(AppConstant.BODY, object);
+		}
+		return map;
+	
+	}
+
+}

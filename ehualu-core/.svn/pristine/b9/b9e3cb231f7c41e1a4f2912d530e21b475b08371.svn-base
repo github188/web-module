@@ -1,0 +1,33 @@
+package com.ehualu.rise.service.user.impl;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
+
+import com.ehualu.rise.dao.user.UserVehicleDao;
+import com.ehualu.rise.pojo.user.UserVehicle;
+import com.ehualu.rise.service.user.UserVehicleService;
+@Service("userVehicleService")
+public class UserVehicleServiceImpl implements UserVehicleService{
+	
+	private UserVehicleDao userVehicleDao;
+	
+	public UserVehicleDao getUserVehicleDao() {
+		return userVehicleDao;
+	}
+	@Inject
+	public void setUserVehicleDao(UserVehicleDao userVehicleDao) {
+		this.userVehicleDao = userVehicleDao;
+	}
+
+	@Override
+	public int insertOrUpdateUserVehicle(UserVehicle userVehicle) {
+		if(userVehicle.getId() != 0){
+			return userVehicleDao.insertSelective(userVehicle);
+		}else{
+			return userVehicleDao.updateByPrimaryKeySelective(userVehicle);
+		}
+		
+	}
+
+}

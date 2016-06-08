@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ehualu.rise.dao.violate.VehicleViolateDao">
+	<resultMap id="VehicleViolate" type="com.ehualu.rise.pojo.violate.VehicleViolate">
+		<id column="XH" property="xh" jdbcType="VARCHAR" />
+		<id column="JDSLB" property="jdslb" jdbcType="VARCHAR" />
+		<id column="LXFS" property="lxfs" jdbcType="VARCHAR" />
+		<id column="HPZL" property="hpzl" jdbcType="VARCHAR" />
+		<id column="JDCSYR" property="jdcsyr" jdbcType="VARCHAR" />
+		<id column="HPHM" property="hphm" jdbcType="VARCHAR" />
+		<id column="WFDD" property="wfdd" jdbcType="VARCHAR" />
+		<id column="WFDZ" property="wfdz" jdbcType="VARCHAR" />
+		<id column="WFSJ" property="wfsj" jdbcType="DATE" />
+		<id column="WFBH" property="wfbh" jdbcType="VARCHAR" />
+		<id column="WFXW" property="wfxw" jdbcType="VARCHAR" />
+		<id column="XZQH" property="xzqh" jdbcType="VARCHAR" />
+		<id column="DSR" property="dsr" jdbcType="VARCHAR" />
+		<id column="FZJG" property="fzjg" jdbcType="VARCHAR" />
+		<id column="DH" property="dh" jdbcType="VARCHAR" />
+		<id column="CLSJ" property="clsj" jdbcType="DATE" />
+		<id column="FKJE" property="fkje" jdbcType="NUMERIC" />
+		<id column="JDSBH" property="jdsbh" jdbcType="VARCHAR" />
+		<id column="WFJFS" property="wfjfs" jdbcType="NUMERIC" />
+		<id column="CJJG" property="cjjg" jdbcType="VARCHAR" />
+		<id column="FDJH" property="fdjh" jdbcType="VARCHAR" />
+		<id column="CLBJ" property="clbj" jdbcType="VARCHAR" />
+		<id column="CLSBDH" property="clsbdh" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="ViolationComplex" type="com.ehualu.rise.pojo.violate.ViolationComplex">
+		<id column="XH" property="xh" jdbcType="VARCHAR" />
+		<id column="JDSLB" property="jdslb" jdbcType="VARCHAR" />
+		<id column="LXFS" property="lxfs" jdbcType="VARCHAR" />
+		<id column="HPZL" property="hpzl" jdbcType="VARCHAR" />
+		<id column="JDCSYR" property="jdcsyr" jdbcType="VARCHAR" />
+		<id column="HPHM" property="hphm" jdbcType="VARCHAR" />
+		<id column="WFDD" property="wfdd" jdbcType="VARCHAR" />
+		<id column="WFDZ" property="wfdz" jdbcType="VARCHAR" />
+		<id column="WFSJ" property="wfsj" jdbcType="DATE" />
+		<id column="WFBH" property="wfbh" jdbcType="VARCHAR" />
+		<id column="WFXW" property="wfxw" jdbcType="VARCHAR" />
+		<id column="XZQH" property="xzqh" jdbcType="VARCHAR" />
+		<id column="DSR" property="dsr" jdbcType="VARCHAR" />
+		<id column="FZJG" property="fzjg" jdbcType="VARCHAR" />
+		<id column="CLSJ" property="clsj" jdbcType="DATE" />
+		<id column="FKJE" property="fkje" jdbcType="NUMERIC" />
+		<id column="JDSBH" property="jdsbh" jdbcType="VARCHAR" />
+		<id column="WFJFS" property="wfjfs" jdbcType="NUMERIC" />
+		<id column="CJJG" property="cjjg" jdbcType="VARCHAR" />
+		<id column="FDJH" property="fdjh" jdbcType="VARCHAR" />
+		<id column="CLBJ" property="clbj" jdbcType="VARCHAR" />
+		<id column="CLSBDH" property="clsbdh" jdbcType="VARCHAR" />
+		<id column="TZSH" property="clsbdh" jdbcType="VARCHAR" />		
+	</resultMap>
+	
+	<resultMap id="VehicleViolateEn" type="com.ehualu.rise.pojo.violate.VehicleViolateEn">
+		<id column="XH" property="xh" jdbcType="VARCHAR" />
+		<id column="JDSLB" property="jdslb" jdbcType="VARCHAR" />
+		<id column="LXFS" property="lxfs" jdbcType="VARCHAR" />
+		<id column="HPZL" property="hpzl" jdbcType="VARCHAR" />
+		<id column="JDCSYR" property="jdcsyr" jdbcType="VARCHAR" />
+		<id column="HPHM" property="hphm" jdbcType="VARCHAR" />
+		<id column="WFDD" property="wfdd" jdbcType="VARCHAR" />
+		<id column="WFDZ" property="wfdz" jdbcType="VARCHAR" />
+		<id column="WFSJ" property="wfsj" jdbcType="VARCHAR" />
+		<id column="WFBH" property="wfbh" jdbcType="VARCHAR" />
+		<id column="WFXW" property="wfxw" jdbcType="VARCHAR" />
+		<id column="XZQH" property="xzqh" jdbcType="VARCHAR" />
+		<id column="DSR" property="dsr" jdbcType="VARCHAR" />
+		<id column="FZJG" property="fzjg" jdbcType="VARCHAR" />
+		<id column="DH" property="dh" jdbcType="VARCHAR" />
+		<id column="CLSJ" property="clsj" jdbcType="VARCHAR" />
+		<id column="FKJE" property="fkje" jdbcType="VARCHAR" />
+		<id column="JDSBH" property="jdsbh" jdbcType="VARCHAR" />
+		<id column="WFJFS" property="wfjfs" jdbcType="VARCHAR" />
+		<id column="CJJG" property="cjjg" jdbcType="VARCHAR" />
+		<id column="FDJH" property="fdjh" jdbcType="VARCHAR" />
+		<id column="CLBJ" property="clbj" jdbcType="VARCHAR" />
+		<id column="CLSBDH" property="clsbdh" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="ViolationComplexEn" type="com.ehualu.rise.pojo.violate.ViolationComplexEn">
+		<id column="XH" property="xh" jdbcType="VARCHAR" />
+		<id column="JDSLB" property="jdslb" jdbcType="VARCHAR" />
+		<id column="LXFS" property="lxfs" jdbcType="VARCHAR" />
+		<id column="HPZL" property="hpzl" jdbcType="VARCHAR" />
+		<id column="JDCSYR" property="jdcsyr" jdbcType="VARCHAR" />
+		<id column="HPHM" property="hphm" jdbcType="VARCHAR" />
+		<id column="WFDD" property="wfdd" jdbcType="VARCHAR" />
+		<id column="WFDZ" property="wfdz" jdbcType="VARCHAR" />
+		<id column="WFSJ" property="wfsj" jdbcType="VARCHAR" />
+		<id column="WFBH" property="wfbh" jdbcType="VARCHAR" />
+		<id column="WFXW" property="wfxw" jdbcType="VARCHAR" />
+		<id column="XZQH" property="xzqh" jdbcType="VARCHAR" />
+		<id column="DSR" property="dsr" jdbcType="VARCHAR" />
+		<id column="FZJG" property="fzjg" jdbcType="VARCHAR" />
+		<id column="CLSJ" property="clsj" jdbcType="VARCHAR" />
+		<id column="FKJE" property="fkje" jdbcType="VARCHAR" />
+		<id column="JDSBH" property="jdsbh" jdbcType="VARCHAR" />
+		<id column="WFJFS" property="wfjfs" jdbcType="VARCHAR" />
+		<id column="CJJG" property="cjjg" jdbcType="VARCHAR" />
+		<id column="FDJH" property="fdjh" jdbcType="VARCHAR" />
+		<id column="CLBJ" property="clbj" jdbcType="VARCHAR" />
+		<id column="CLSBDH" property="clsbdh" jdbcType="VARCHAR" />
+		<id column="TZSH" property="clsbdh" jdbcType="VARCHAR" />		
+	</resultMap>
+	
+	<sql id="Base_Surveil_List" >
+    	XH, JDSLB, LXFS, HPZL, JDCSYR, HPHM, WFDD, WFDZ, WFSJ, WFBH, WFXW, XZQH, DSR, FZJG, 
+    	DH, CLSJ, FKJE, JDSBH, CJJG, WFJFS, FDJH, CLBJ, CLSBDH
+  	</sql>
+  	
+  	<sql id="Base_SurveilComp_List" >
+    	XH, JDSLB, LXFS, HPZL, JDCSYR, HPHM, WFDD, WFDZ, WFSJ, WFBH, WFXW, XZQH, DSR, FZJG, 
+    	CLSJ, FKJE, JDSBH, CJJG, WFJFS, FDJH, CLBJ, CLSBDH,TZSH
+  	</sql>
+	<!-- 通过号牌号码查询机动车违法信息，参数为字符串 -->
+	<select id="queryByHphm" parameterType="string" resultMap="VehicleViolate">
+		select
+		t.xh,t.jdslb,t.lxfs,t.hpzl,t.jdcsyr,t.hphm,t.wfdd,t.wfdz,t.wfsj,t.wfbh,t.wfxw,
+		t.xzqh,t.dsr,t.fzjg,t.dh,t.clsj,t.fkje,t.jdsbh,t.wfjfs,t.cjjg,t.fdjh,t.clbj,t.clsbdh from
+		VIO_SURVEIL t where hphm=#{hphm}
+	</select>
+	
+	<!-- 通过号牌号码查询机动车违法信息（时间为次要条件），参数为对象 -->
+	<select id="queryViolateByHphm" parameterType="com.ehualu.rise.pojo.violate.VehicleViolate" resultMap="VehicleViolate">
+		select * from(select
+		<include refid="Base_Surveil_List"/>		
+		from
+		VIO_SURVEIL where hphm=#{hphm}	
+		<if test="wfsj != null">
+		 and wfsj=#{wfsj}	
+		</if>
+		order by wfsj desc)
+		where 1=1 
+		<if test="num != 0">
+			and rownum &lt;=#{num} 		
+		</if>
+	</select>
+	<!-- 通过号牌号码和处理标记查询机动车违法信息#{clbj} -->
+	<select id="queryViolateByHphmClbj" parameterType="com.ehualu.rise.pojo.violate.ViolationComplex" resultMap="ViolationComplex">
+		select
+		<include refid="Base_SurveilComp_List"/>		
+		from
+		VIO_SURVEIL where hphm=#{hphm} and clbj='0'
+	</select>
+	
+	<!-- 通过号牌号码查询加密机动车违法信息参数为对象 -->
+	<select id="queryEnViolateByHphm" parameterType="com.ehualu.rise.pojo.violate.VehicleViolateEn" resultMap="VehicleViolateEn">
+		select <include refid="Base_Surveil_List"/> 
+		from(select a.*,ROWNUM rn from(select t.*,t.rowid
+		from VIO_SURVEIL_EN where hphm=#{hphm} order by t.rowid desc) a 
+		where ROWNUM &lt;=(((page-1)*pageSize)+pageSize)) where rn>((page-1)*pageSize)
+		
+	</select>
+	<!-- 通过号牌号码和处理标记查询加密机动车违法信息-->
+	<select id="queryEnViolateByHphmClbj" parameterType="com.ehualu.rise.pojo.violate.ViolationComplexEn" resultMap="ViolationComplexEn">
+		select
+		<include refid="Base_SurveilComp_List"/>		
+		from
+		VIO_SURVEIL_EN where hphm=#{hphm} and clbj=#{clbj}
+	</select>
+</mapper>

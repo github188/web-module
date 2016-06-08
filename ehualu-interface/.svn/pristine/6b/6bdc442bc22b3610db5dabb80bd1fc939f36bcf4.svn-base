@@ -1,0 +1,52 @@
+package com.ehualu.rise.webservice.impl;
+
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
+
+import com.alibaba.fastjson.JSON;
+import com.ehualu.rise.pojo.msg.Msg;
+import com.ehualu.rise.service.violate.VehicleViolateService;
+import com.ehualu.rise.webservice.VehicleViolationWebService;
+/**
+ * 机动车违章查询接口实现
+ * @author Administrator
+ *
+ */
+@Service("vehicleViolationWebService")
+public class VehicleViolationWebServiceImpl implements VehicleViolationWebService {
+
+	
+	private VehicleViolateService vehicleViolateService;
+	
+	
+	public VehicleViolateService getVehicleViolateService() {
+		return vehicleViolateService;
+	}
+
+	@Inject
+	public void setVehicleViolateService(VehicleViolateService vehicleViolateService) {
+		this.vehicleViolateService = vehicleViolateService;
+	}
+
+	/**
+	 * 查询车辆违法信息
+	 * @param paramJSON
+	 * @return
+	 */
+	public String queryVehicleViolate(String paramJSON){
+		Msg msg = vehicleViolateService.queryVehicleViolate(paramJSON);
+		return JSON.toJSONString(msg);
+	}
+	
+	/**
+	 * 根据号牌号码查询机动车违法(通过时间点，结果集数量)
+	 * @param paramJson
+	 * @return
+	 */
+	public String queryViolateByHphm(String paramJson){
+		Msg msg = vehicleViolateService.queryViolateByHphm(paramJson);
+		return JSON.toJSONString(msg);
+	}
+}

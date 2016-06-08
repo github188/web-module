@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+         http://www.springframework.org/schema/context
+         http://www.springframework.org/schema/context/spring-context-3.0.xsd
+         http://www.springframework.org/schema/aop
+         http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+         http://www.springframework.org/schema/tx 
+         http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+         
+         
+  <bean id="servicesManager" class="com.ehualu.rise.manager.ServicesManager">
+  	<property name="map">
+  		<map>
+  			<!-- 用户信息协议 -->
+  			<entry key="0101">
+  				<bean class="com.ehualu.rise.service.user.LoginManager"></bean>
+  			</entry>
+  			<entry key="0102">
+  				<bean class="com.ehualu.rise.service.user.ChangePasswordManager"></bean>
+  			</entry>
+  			<entry key="0103">
+  				<bean class="com.ehualu.rise.service.user.RegisterManager"></bean>
+  			</entry>
+  			<entry key="0104">
+  				<bean class="com.ehualu.rise.service.user.VerificationCodeManager"></bean>
+  			</entry>
+  			<entry key="0105">
+  				<bean class="com.ehualu.rise.service.user.FindPasswordManager"></bean>
+  			</entry>
+  			<entry key="0106">
+  				<bean class="com.ehualu.rise.service.user.LogoutManager"></bean>
+  			</entry>
+  			<entry key="0107">
+  				<bean class="com.ehualu.rise.service.user.UserFeedBackManager"></bean>
+  			</entry>
+  			<!-- 机动车查询协议 -->
+  			<entry key="0301">
+  				<bean class="com.ehualu.rise.service.violate.QueryJdcManage"></bean>
+  			</entry>
+  			<!-- 驾驶证查询协议 -->
+  			<entry key="0401">
+  				<bean class="com.ehualu.rise.service.violate.QueryDrivingLicenseManage"></bean>
+  			</entry>
+  			<entry key="0402">
+  				<bean class="com.ehualu.rise.service.violate.BoundDrivingLicenseManage"></bean>
+  			</entry>
+  			<entry key="0403">
+  				<bean class="com.ehualu.rise.service.violate.UnBoundDrivingLicenseManage"></bean>
+  			</entry>
+  			<entry key="0404">
+  				<bean class="com.ehualu.rise.service.violate.QueryBoundDrivingLicenseManage"></bean>
+  			</entry> 
+  			<!-- 广告咨询协议 -->
+  			<entry key="0501">
+  				<bean class="com.ehualu.rise.service.topic.TopicManager"></bean>
+  			</entry>
+  			<!-- 违章查询协议 -->
+  			<entry key="0601">
+  				<bean class="com.ehualu.rise.service.violate.QueryJdcViolateManager"></bean>
+  			</entry>
+  		</map>
+  	</property>
+  </bean>
+</beans>

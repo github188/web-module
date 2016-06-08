@@ -1,0 +1,380 @@
+package com.ehualu.rise.service.violate.impl;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+
+import com.alibaba.fastjson.JSON;
+import com.ehualu.rise.constants.InterfaceConstant;
+import com.ehualu.rise.dao.violate.VehicleViolateDao;
+import com.ehualu.rise.dao.violate.ViolationDao;
+import com.ehualu.rise.pojo.msg.Msg;
+import com.ehualu.rise.pojo.violate.ViolationComplex;
+import com.ehualu.rise.pojo.violate.ViolationComplexEn;
+import com.ehualu.rise.property.PropertyConfig;
+import com.ehualu.rise.service.violate.ViolationComplexService;
+import com.ehualu.rise.util.SecurityUtil;
+/**
+ * APP终端查询违法的业务处理
+ * @author Administrator
+ *
+ */
+@Service("violationComplexService")
+public class ViolationComplexServiceImpl implements ViolationComplexService {
+
+	private static final Logger logger = Logger.getLogger(ViolationComplexServiceImpl.class);
+	
+	private VehicleViolateDao vehicleViolateDao;
+	
+	private ViolationDao violationDao;
+	
+	
+	public VehicleViolateDao getVehicleViolateDao() {
+		return vehicleViolateDao;
+	}
+	@Inject
+	public void setVehicleViolateDao(VehicleViolateDao vehicleViolateDao) {
+		this.vehicleViolateDao = vehicleViolateDao;
+	}
+
+	public ViolationDao getViolationDao() {
+		return violationDao;
+	}
+	@Inject
+	public void setViolationDao(ViolationDao violationDao) {
+		this.violationDao = violationDao;
+	}
+
+
+
+
+	/**
+	 * 机动与驾驶证违法联合处理
+	 * @param jsonParam
+	 * @return
+	 */
+	public Msg queryViolationComplex(String paramJSON){
+		logger.info("paramJSON:"+paramJSON);
+		ViolationComplex vic = JSON.parseObject(paramJSON, ViolationComplex.class);
+		Msg msg = new Msg();
+		//判断参数是否为空
+		if(vic == null){
+			msg.setStatuCode(InterfaceConstant.PARAM_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("PARAM_IS_NULL"));
+			
+			logger.info("vic == null");
+			return msg;
+		}
+		//判断号牌号码是否为空
+		if(vic.getHphm() == null){
+			msg.setStatuCode(InterfaceConstant.Code_005.COMPLEX_HPHM_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("COMPLEX_HPHM_IS_NULL"));
+			
+			logger.info("vic.getHphm() == null");
+			return msg;
+		}
+		List<ViolationComplex> list = new ArrayList<ViolationComplex>();
+		//查询机动车违法表
+		List<ViolationComplex> vicVehList = vehicleViolateDao.queryViolateByHphmClbj(vic);
+		for(int i=0;i<vicVehList.size();i++){
+			ViolationComplex vioComp = vicVehList.get(i);
+			vioComp.setSjly(0);
+			list.add(vioComp);
+		}
+		//查询驾驶证违法表
+		List<ViolationComplex> vicSurList = violationDao.queryViolationByHphm(vic);
+		for(int i=0;i<vicSurList.size();i++){
+			ViolationComplex vioComp = vicSurList.get(i);
+			vioComp.setSjly(1);
+			double yfznj = sumYfznj(vioComp);
+			vioComp.setYfznj(yfznj);
+			list.add(vioComp);
+		}
+		
+		if(list.size() == 0){
+			msg.setStatuCode(InterfaceConstant.RESULT_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("RESULT_IS_NULL"));
+			
+			logger.info("ViolationComplex is null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		
+		msg.setMsgBody(list);
+		msg.setStatuCode(InterfaceConstant.STATU_SUCCESS);
+		
+		logger.info("RESULT:"+JSON.toJSONString(msg));
+		return msg;
+	}
+	
+	/**
+	 * 机动与驾驶证违法联合处理加密数据
+	 * @param jsonParam
+	 * @return
+	 */
+	public Msg queryEnViolationComplex(String paramJSON){
+		logger.info("paramJSON:"+paramJSON);
+		ViolationComplexEn vicEn = JSON.parseObject(paramJSON, ViolationComplexEn.class);
+		Msg msg = new Msg();
+		//判断参数是否为空
+		if(vicEn == null){
+			msg.setStatuCode(InterfaceConstant.PARAM_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("PARAM_IS_NULL"));
+			
+			logger.info("vic == null");
+			return msg;
+		}
+		//判断号牌号码是否为空
+		if(vicEn.getHphm() == null){
+			msg.setStatuCode(InterfaceConstant.Code_005.COMPLEX_HPHM_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("COMPLEX_HPHM_IS_NULL"));
+			
+			logger.info("vic.getHphm() == null");
+			return msg;
+		}
+		List<ViolationComplex> list = new ArrayList<ViolationComplex>();
+		//查询机动车违法表
+		List<ViolationComplexEn> vicvcEnList = vehicleViolateDao.queryEnViolateByHphmClbj(vicEn);
+		for(int i=0;i<vicvcEnList.size();i++){
+			ViolationComplexEn vioCompEn = vicvcEnList.get(i);
+			ViolationComplex vioComp = createViolationComplexSur(vioCompEn);
+			vioComp.setSjly(0);
+			list.add(vioComp);
+		}
+		//查询驾驶证违法表
+		List<ViolationComplexEn> vicSurEnList = violationDao.queryEnViolationByHphm(vicEn);
+		//数据类型转换
+		for(int i=0;i<vicSurEnList.size();i++){
+			ViolationComplexEn vioCompEn = vicSurEnList.get(i);
+			ViolationComplex vioComp = createViolationComplexVio(vioCompEn);
+			vioComp.setSjly(1);
+			double yfznj = sumYfznj(vioComp);
+			vioComp.setYfznj(yfznj);
+			list.add(vioComp);
+		}
+		
+		if(list.size() == 0){
+			msg.setStatuCode(InterfaceConstant.RESULT_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("RESULT_IS_NULL"));
+			
+			logger.info("ViolationComplex is null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		
+		msg.setMsgBody(list);
+		msg.setStatuCode(InterfaceConstant.STATU_SUCCESS);
+		
+		logger.info("RESULT:"+JSON.toJSONString(msg));
+		return msg;
+	}
+	
+	/**
+	 * 计算滞纳金
+	 * @param violationComplex
+	 * @return
+	 */
+	private double sumYfznj(ViolationComplex violationComplex){
+		Date dateLrsj = violationComplex.getLrsj();
+		Date dateNow = new Date();
+		long days = (dateNow.getTime() - dateLrsj.getTime())/(24*60*60*1000);
+		double fkje = violationComplex.getFkje();
+		long n = days - 15;
+		double sum = 0;
+		if(n<0){
+			return 0;
+		}
+		sum = fkje * 0.03 * n;
+		if(fkje < sum){
+			return fkje;
+		}
+		return sum;
+	}
+	/**
+	 * 转换数据类型
+	 * @param vcEn
+	 * @return
+	 */
+	private ViolationComplex createViolationComplexSur(ViolationComplexEn vcEn){
+		//设置时间格式
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		//解密秘钥
+		String secretKey = PropertyConfig.getProperty("AES_SECRET_KEY");
+		
+		String xhStr = SecurityUtil.decrypt(vcEn.getXh(), secretKey);
+		String jdslbStr = SecurityUtil.decrypt(vcEn.getJdslb(), secretKey);
+		String lxfsStr = SecurityUtil.decrypt(vcEn.getLxfs(), secretKey);
+		String hpzlStr = SecurityUtil.decrypt(vcEn.getHpzl(), secretKey);
+		String jdcsyrStr = SecurityUtil.decrypt(vcEn.getJdcsyr(), secretKey);
+		String hphmStr = SecurityUtil.decrypt(vcEn.getHphm(), secretKey);
+		
+		logger.info("xhStr="+xhStr);
+		logger.info("jdslbStr="+jdslbStr);
+		logger.info("lxfsStr="+lxfsStr);
+		logger.info("hpzlStr="+hpzlStr);
+		logger.info("jdcsyrStr="+jdcsyrStr);
+		logger.info("hphmStr="+hphmStr);
+		
+		String wfddStr = SecurityUtil.decrypt(vcEn.getWfdd(), secretKey);
+		String wfdzStr = SecurityUtil.decrypt(vcEn.getWfdz(), secretKey);
+		String wfsjStr = SecurityUtil.decrypt(vcEn.getWfsj(), secretKey);
+		String wfbhStr = SecurityUtil.decrypt(vcEn.getWfbh(), secretKey);
+		String wfxwStr = SecurityUtil.decrypt(vcEn.getWfxw(), secretKey);
+		String xzqhStr = SecurityUtil.decrypt(vcEn.getXzqh(), secretKey);
+		String dsrStr = SecurityUtil.decrypt(vcEn.getDsr(), secretKey);
+		String fzjgStr = SecurityUtil.decrypt(vcEn.getFzjg(), secretKey);
+		
+		logger.info("wfddStr="+wfddStr);
+		logger.info("wfdzStr="+wfdzStr);
+		logger.info("wfsjStr="+wfsjStr);
+		logger.info("wfbhStr="+wfbhStr);
+		logger.info("wfxwStr="+wfxwStr);
+		logger.info("xzqhStr="+xzqhStr);
+		logger.info("dsrStr="+dsrStr);
+		logger.info("fzjgStr="+fzjgStr);
+		
+		
+		String clsjStr = SecurityUtil.decrypt(vcEn.getClsj(), secretKey);
+		String fkjeStr = SecurityUtil.decrypt(vcEn.getFkje(), secretKey);
+		String jdsbhStr = SecurityUtil.decrypt(vcEn.getJdsbh(), secretKey);
+		String wfjfsStr = SecurityUtil.decrypt(vcEn.getWfjfs(), secretKey);
+		String cjjgStr = SecurityUtil.decrypt(vcEn.getCjjg(), secretKey);
+		String fdjhStr = SecurityUtil.decrypt(vcEn.getFdjh(), secretKey);
+		String clbjStr = SecurityUtil.decrypt(vcEn.getClbj(), secretKey);
+		String clsbdhStr = SecurityUtil.decrypt(vcEn.getClsbdh(), secretKey);
+		String tzshStr = SecurityUtil.decrypt(vcEn.getTzsh(), secretKey);
+		
+		logger.info("clsjStr="+clsjStr);
+		logger.info("fkjeStr="+fkjeStr);
+		logger.info("jdsbhStr="+jdsbhStr);
+		logger.info("wfjfsStr="+wfjfsStr);
+		logger.info("cjjgStr"+cjjgStr);
+		logger.info("fdjhStr="+fdjhStr);
+		logger.info("clbjStr="+clbjStr);
+		logger.info("clsbdhStr="+clsbdhStr);
+		logger.info("tzshStr="+tzshStr);
+		try {
+			ViolationComplex violationComplex = new ViolationComplex(xhStr, tzshStr, wfbhStr, jdsbhStr,
+					jdslbStr, lxfsStr, hpzlStr, jdcsyrStr,
+					hphmStr, wfddStr, wfdzStr, sdf.parse(wfsjStr), wfxwStr,
+					xzqhStr, dsrStr, fzjgStr, sdf.parse(clsjStr), Double.parseDouble((fkjeStr == null || fkjeStr.trim().equals("")?"0":fkjeStr)) ,
+					cjjgStr, Double.parseDouble((wfjfsStr == null || wfjfsStr.trim().equals("")?"0":wfjfsStr)), fdjhStr, clbjStr, clsbdhStr);
+			return violationComplex;
+		} catch (Exception e) {
+			logger.info(e);
+			return null;
+		}
+	}
+	
+	/**
+	 * 转换数据类型
+	 * @param vcEn
+	 * @return
+	 */
+	private ViolationComplex createViolationComplexVio(ViolationComplexEn vcEn){
+		//设置时间格式
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		//解密秘钥
+		String secretKey = PropertyConfig.getProperty("AES_SECRET_KEY");
+		
+		String xhStr = SecurityUtil.decrypt(vcEn.getXh(), secretKey);
+		String tzshStr = SecurityUtil.decrypt(vcEn.getTzsh(), secretKey);
+		String wfbhStr = SecurityUtil.decrypt(vcEn.getWfbh(), secretKey);
+		String jdsbhStr = SecurityUtil.decrypt(vcEn.getJdsbh(), secretKey);
+		String jdslbStr = SecurityUtil.decrypt(vcEn.getJdslb(), secretKey);
+		String lxfsStr = SecurityUtil.decrypt(vcEn.getLxfs(), secretKey);
+		String hpzlStr = SecurityUtil.decrypt(vcEn.getHpzl(), secretKey);
+		String jdcsyrStr = SecurityUtil.decrypt(vcEn.getJdcsyr(), secretKey);
+		
+		logger.info("xhStr="+xhStr);
+		logger.info("tzshStr="+tzshStr);
+		logger.info("wfbhStr="+wfbhStr);
+		logger.info("jdsbhStr="+jdsbhStr);
+		logger.info("jdslbStr="+jdslbStr);
+		logger.info("lxfsStr="+lxfsStr);
+		logger.info("hpzlStr="+hpzlStr);
+		logger.info("jdcsyrStr="+jdcsyrStr);
+		
+		String jszhStr = SecurityUtil.decrypt(vcEn.getJszh(), secretKey);
+		String hphmStr = SecurityUtil.decrypt(vcEn.getHphm(), secretKey);
+		String wfddStr = SecurityUtil.decrypt(vcEn.getWfdd(), secretKey);
+		String wfdzStr = SecurityUtil.decrypt(vcEn.getWfdz(), secretKey);
+		String wfsjStr = SecurityUtil.decrypt(vcEn.getWfsj(), secretKey);
+		String wfxwStr = SecurityUtil.decrypt(vcEn.getWfxw(), secretKey);
+		String xzqhStr = SecurityUtil.decrypt(vcEn.getXzqh(), secretKey);
+		String dsrStr = SecurityUtil.decrypt(vcEn.getDsr(), secretKey);
+		String fzjgStr = SecurityUtil.decrypt(vcEn.getFzjg(), secretKey);
+		
+		logger.info("jszhStr="+jszhStr);
+		logger.info("hphmStr="+hphmStr);
+		logger.info("wfddStr="+wfddStr);
+		logger.info("wfdzStr="+wfdzStr);
+		logger.info("wfsjStr="+wfsjStr);
+		logger.info("wfxwStr="+wfxwStr);
+		logger.info("xzqhStr="+xzqhStr);
+		logger.info("dsrStr="+dsrStr);
+		logger.info("fzjgStr="+fzjgStr);
+		
+		
+		String clsjStr = SecurityUtil.decrypt(vcEn.getClsj(), secretKey);
+		String fkjeStr = SecurityUtil.decrypt(vcEn.getFkje(), secretKey);
+		String cjjgStr = SecurityUtil.decrypt(vcEn.getCjjg(), secretKey);
+		String wfjfsStr = SecurityUtil.decrypt(vcEn.getWfjfs(), secretKey);
+		String fdjhStr = SecurityUtil.decrypt(vcEn.getFdjh(), secretKey);
+		String clbjStr = SecurityUtil.decrypt(vcEn.getClbj(), secretKey);
+		String clsbdhStr = SecurityUtil.decrypt(vcEn.getClsbdh(), secretKey);
+		String lrsjStr = SecurityUtil.decrypt(vcEn.getLrsj(), secretKey);
+		String xxlyStr = SecurityUtil.decrypt(vcEn.getXxly(), secretKey);
+		String znjStr = SecurityUtil.decrypt(vcEn.getZnj(), secretKey);
+		String yfznjStr = SecurityUtil.decrypt(vcEn.getYfznj(), secretKey);
+		
+		String jkfsStr = SecurityUtil.decrypt(vcEn.getJkfs(), secretKey);
+		
+		logger.info("clsjStr="+clsjStr);
+		logger.info("fkjeStr="+fkjeStr);
+		logger.info("cjjgStr"+cjjgStr);
+		logger.info("wfjfsStr="+wfjfsStr);
+		logger.info("fdjhStr="+fdjhStr);
+		logger.info("clbjStr="+clbjStr);
+		logger.info("clsbdhStr="+clsbdhStr);
+		logger.info("lrsjStr="+lrsjStr);
+		logger.info("xxlyStr="+xxlyStr);
+		logger.info("znjStr="+znjStr);
+		logger.info("yfznjStr="+yfznjStr);
+		logger.info("jkfsStr="+jkfsStr);
+		
+		
+		String cljgStr = SecurityUtil.decrypt(vcEn.getCljg(), secretKey);
+		String fxjgStr = SecurityUtil.decrypt(vcEn.getFxjg(), secretKey);
+		String cfzlStr = SecurityUtil.decrypt(vcEn.getCfzl(), secretKey);
+		String jkbjStr = SecurityUtil.decrypt(vcEn.getJkbj(), secretKey);
+		String jsjgStr = SecurityUtil.decrypt(vcEn.getJsjg(), secretKey);
+		String gxsjStr = SecurityUtil.decrypt(vcEn.getGxsj(), secretKey);
+		
+		
+		logger.info("cljgStr="+cljgStr);
+		logger.info("fxjgStr="+fxjgStr);
+		logger.info("cfzlStr"+cfzlStr);
+		logger.info("jkbjStr="+jkbjStr);
+		logger.info("jsjgStr="+jsjgStr);
+		logger.info("gxsjStr="+gxsjStr);
+		try {
+			ViolationComplex violationComplex = new ViolationComplex(wfbhStr, jdsbhStr,
+					jdslbStr, lxfsStr, hpzlStr, jdcsyrStr,
+					hphmStr, wfddStr, wfdzStr, sdf.parse(wfsjStr), wfxwStr,
+					dsrStr, sdf.parse(clsjStr), Double.parseDouble((fkjeStr == null || fkjeStr.trim().equals("")?"0":fkjeStr)) ,
+					Double.parseDouble((wfjfsStr == null || wfjfsStr.trim().equals("")?"0":wfjfsStr)),
+					sdf.parse(lrsjStr), xxlyStr, Double.parseDouble((znjStr == null || znjStr.trim().equals("")?"0":znjStr)),jkfsStr,
+					cljgStr, fxjgStr, cfzlStr, jkbjStr, jsjgStr,
+					sdf.parse(gxsjStr));
+			return violationComplex;
+		} catch (Exception e) {
+			logger.info(e);
+			return null;
+		}
+	}
+}

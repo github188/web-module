@@ -1,0 +1,43 @@
+package com.ehualu.rise.webservice.impl;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
+
+import com.alibaba.fastjson.JSON;
+import com.ehualu.rise.pojo.msg.Msg;
+import com.ehualu.rise.service.violate.ViolationService;
+import com.ehualu.rise.webservice.ViolationWebService;
+/**
+ * 驾驶证违章查询实现
+ * @author Administrator
+ *
+ */
+@Service("violationWebService")
+public class ViolationWebServiceImpl implements ViolationWebService {
+
+	private ViolationService violationService;
+	
+	public ViolationService getViolationService() {
+		return violationService;
+	}
+
+
+	@Inject
+	public void setViolationService(ViolationService violationService) {
+		this.violationService = violationService;
+	}
+
+
+
+	/**
+	 * 查询驾驶证违法(通过时间点，结果集数量)
+	 * @param paramJson
+	 * @return
+	 */
+	public String queryViolationByJszh(String paramJson) {
+		Msg msg = violationService.queryViolationByJszh(paramJson);
+		return JSON.toJSONString(msg);
+	}
+
+}

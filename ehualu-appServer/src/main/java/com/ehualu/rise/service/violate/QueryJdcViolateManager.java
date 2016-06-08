@@ -1,0 +1,165 @@
+package com.ehualu.rise.service.violate;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import org.apache.log4j.Logger;
+
+import com.alibaba.druid.support.json.JSONUtils;
+import com.alibaba.fastjson.JSON;
+import com.ehualu.rise.constants.AppConstant;
+import com.ehualu.rise.constants.InterfaceConstant;
+import com.ehualu.rise.constants.KeyStoreRSA;
+import com.ehualu.rise.pojo.Head;
+import com.ehualu.rise.pojo.msg.Msg;
+import com.ehualu.rise.pojo.msg.SecurityMsg;
+import com.ehualu.rise.property.CertConfig;
+import com.ehualu.rise.security.rsa.RSAUtils;
+import com.ehualu.rise.service.ServiceInterface;
+import com.ehualu.rise.webservice.VehicleViolationWebService;
+import com.ehualu.rise.webservice.ViolationComplexWebService;
+import com.ehualu.rise.webservice.ViolationWebService;
+
+/**
+ * 机动车违法查询
+ * 
+ * @author Administrator
+ * 
+ */
+public class QueryJdcViolateManager implements ServiceInterface {
+
+	private static final Logger logger = Logger
+			.getLogger(QueryJdcViolateManager.class);
+
+//	private ViolationComplexWebService violationComplexWebService;
+//
+//
+//	public ViolationComplexWebService getViolationComplexWebService() {
+//		return violationComplexWebService;
+//	}
+//	
+//	@Inject
+//	public void setViolationComplexWebService(
+//			ViolationComplexWebService violationComplexWebService) {
+//		this.violationComplexWebService = violationComplexWebService;
+//	}
+	
+	private VehicleViolationWebService vehicleViolationWebService;
+
+
+	public VehicleViolationWebService getVehicleViolationWebService() {
+		return vehicleViolationWebService;
+	}
+	@Inject
+	public void setVehicleViolationWebService(
+			VehicleViolationWebService vehicleViolationWebService) {
+		this.vehicleViolationWebService = vehicleViolationWebService;
+	}
+
+	@Override
+	public Map<String, Object> handle(String head, String body) {
+		Head header = JSON.parseObject(head, Head.class);
+		if (body == null) {
+			header.setZtm(AppConstant.ExecuteFlag.BODY_IS_NULL);
+			return formatResult(header, null);
+		}
+		String msgStr = null;
+		String outputStr = null;
+		byte[] decrypt = null;
+		try {
+			//对数据进行加密
+			byte[] encrypt = RSAUtils.encryptByPublicKey(body.getBytes(),
+					KeyStoreRSA.INTERFACE_PUBLIC_KEY);
+			//签名
+			String signature = RSAUtils.sign(encrypt,
+					KeyStoreRSA.APPSERVER_PRIVATE_KEY);
+			
+			SecurityMsg message = new SecurityMsg();
+			message.setSignature(signature);
+			message.setDigest(encrypt);
+//			msgStr = violationComplexWebService.queryViolationComplex(JSON
+//					.toJSONString(message));
+			msgStr = vehicleViolationWebService.queryVehicleViolate(JSON
+			.toJSONString(message));
+			SecurityMsg sMsg = JSON.parseObject(msgStr, SecurityMsg.class);
+			boolean isOK = RSAUtils.verify(sMsg.getDigest(),
+					KeyStoreRSA.INTERFACE_PUBLIC_KEY, sMsg.getSignature());
+			//对interface返回信息进行验签
+			if(!isOK){
+				//appServer验证interface签名失败
+				header.setZtm(AppConstant.ExecuteFlag.SIGN_VERIFY_WRONG_APPSERVER);
+				return formatResult(header, null);
+			}
+			System.out.println("isOK:" + isOK);
+			System.out.println("sMsg.getDigest():" + sMsg.getDigest());
+			//对返回i型纳西进行解密
+			decrypt = RSAUtils.decryptByPrivateKey(sMsg.getDigest(),
+					KeyStoreRSA.APPSERVER_PRIVATE_KEY);
+			outputStr = new String(decrypt, "gbk");
+			System.out.println("outputStr:" + outputStr);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//解析返回信息
+		Msg msg = JSON.parseObject(new String(decrypt), Msg.class);
+		if ((msg.getStatuCode()).equals(InterfaceConstant.SIGN_VERIFY_WRONG)) {
+			header.setZtm(AppConstant.ExecuteFlag.SIGN_VERIFY_WRONG_INTERFACE);
+			return formatResult(header, null);
+		}
+		if ((msg.getStatuCode()).equals(InterfaceConstant.PARAM_IS_NULL)) {
+			header.setZtm(AppConstant.Code_06.HPHM_HPZL_IS_NULL);
+			return formatResult(header, null);
+		}
+		if ((msg.getStatuCode())
+				.equals(InterfaceConstant.Code_001.HPHM_IS_NULL)) {
+			header.setZtm(AppConstant.Code_06.HPHM_IS_NULL);
+			return formatResult(header, null);
+		}
+		if ((msg.getStatuCode())
+				.equals(InterfaceConstant.Code_001.HPZL_IS_NULL)) {
+			header.setZtm(AppConstant.Code_06.HPZL_IS_NULL);
+			return formatResult(header, null);
+		}
+		if ((msg.getStatuCode())
+				.equals(InterfaceConstant.Code_001.FDJH_IS_NULL)) {
+			header.setZtm(AppConstant.Code_06.FDJH_IS_NULL);
+			return formatResult(header, null);
+		}
+		if ((msg.getStatuCode())
+				.equals(InterfaceConstant.Code_001.HPZL_NO_MATCH)) {
+			header.setZtm(AppConstant.Code_06.HPZL_NO_MATCH);
+			return formatResult(header, null);
+		}
+		if ((msg.getStatuCode())
+				.equals(InterfaceConstant.Code_001.FDJH_RESULT_NULL)) {
+			header.setZtm(AppConstant.Code_06.FDJH_RESULT_NULL);
+			return formatResult(header, null);
+		}
+		if ((msg.getStatuCode())
+				.equals(InterfaceConstant.Code_001.FDJH_NO_MATCH)) {
+			header.setZtm(AppConstant.Code_06.FDJH_NO_MATCH);
+			return formatResult(header, null);
+		}
+		if ((msg.getStatuCode()).equals(InterfaceConstant.RESULT_IS_NULL)) {
+			header.setZtm(AppConstant.ExecuteFlag.RESULT_IS_NULL);
+			return formatResult(header, null);
+		}
+
+		return formatResult(header, msg.getMsgBody());
+	}
+
+	@Override
+	public Map<String, Object> formatResult(Object head, Object object) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put(AppConstant.HEAD, head);
+		if (object != null) {
+			map.put(AppConstant.BODY, object);
+		}
+
+		return map;
+	}
+
+}

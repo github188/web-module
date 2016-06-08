@@ -1,0 +1,44 @@
+package com.ehualu.rise.util;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+
+import sun.misc.BASE64Encoder;
+
+@SuppressWarnings("restriction")
+public class EncoderBase64 {
+
+	@SuppressWarnings("resource")
+	public static String getContent(String fileName, String type)
+			throws IOException {
+		BASE64Encoder encoder = new BASE64Encoder();
+		StringBuffer result = new StringBuffer();
+		//URL url = new URL("http://210.77.144.234/newesms/mms_file/"+fileName);
+		InputStream in=new FileInputStream(new File(fileName));
+		if (type.equals("text")) {
+			BufferedReader reader = new BufferedReader(
+					new InputStreamReader(in));
+			String str = "";
+			while ((str = reader.readLine()) != null) {
+				result.append(str+"\n");
+			}
+		} else{
+			int i=0;
+			int j=0;
+			byte[] b = new byte[60*1024];
+			byte[] a = new byte[10*1024];
+			while((i=in.read(a))>0){
+				System.arraycopy(a, 0, b, j, i);
+				j+=i;
+			}
+			result.append(encoder.encode(Arrays.copyOfRange(b, 0, j)));
+		}
+		in.close();
+		return result.toString();
+	}
+}

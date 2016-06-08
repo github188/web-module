@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ehualu.rise.dao.user.UserDriverLicenseDao" >
+  <resultMap id="BaseResultMap" type="com.ehualu.rise.pojo.user.UserDriverLicense" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="xm" property="xm" jdbcType="VARCHAR" />
+    <result column="zjhm" property="zjhm" jdbcType="VARCHAR" />
+    <result column="dabh" property="dabh" jdbcType="VARCHAR" />
+    <result column="zxbh" property="zxbh" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, username, xm, zjhm, dabh, zxbh
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_user_driverlicense
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_user_driverlicense
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ehualu.rise.pojo.user.UserDriverLicense" >
+    insert into t_user_driverlicense (id, username, xm, 
+      zjhm, dabh, zxbh)
+    values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{xm,jdbcType=VARCHAR}, 
+      #{zjhm,jdbcType=VARCHAR}, #{dabh,jdbcType=VARCHAR}, #{zxbh,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.ehualu.rise.pojo.user.UserDriverLicense" >
+    insert into t_user_driverlicense
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="username != null" >
+        username,
+      </if>
+      <if test="xm != null" >
+        xm,
+      </if>
+      <if test="zjhm != null" >
+        zjhm,
+      </if>
+      <if test="dabh != null" >
+        dabh,
+      </if>
+      <if test="zxbh != null" >
+        zxbh,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="xm != null" >
+        #{xm,jdbcType=VARCHAR},
+      </if>
+      <if test="zjhm != null" >
+        #{zjhm,jdbcType=VARCHAR},
+      </if>
+      <if test="dabh != null" >
+        #{dabh,jdbcType=VARCHAR},
+      </if>
+      <if test="zxbh != null" >
+        #{zxbh,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ehualu.rise.pojo.user.UserDriverLicense" >
+    update t_user_driverlicense
+    <set >
+      <if test="username != null" >
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="xm != null" >
+        xm = #{xm,jdbcType=VARCHAR},
+      </if>
+      <if test="zjhm != null" >
+        zjhm = #{zjhm,jdbcType=VARCHAR},
+      </if>
+      <if test="dabh != null" >
+        dabh = #{dabh,jdbcType=VARCHAR},
+      </if>
+      <if test="zxbh != null" >
+        zxbh = #{zxbh,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ehualu.rise.pojo.user.UserDriverLicense" >
+    update t_user_driverlicense
+    set username = #{username,jdbcType=VARCHAR},
+      xm = #{xm,jdbcType=VARCHAR},
+      zjhm = #{zjhm,jdbcType=VARCHAR},
+      dabh = #{dabh,jdbcType=VARCHAR},
+      zxbh = #{zxbh,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

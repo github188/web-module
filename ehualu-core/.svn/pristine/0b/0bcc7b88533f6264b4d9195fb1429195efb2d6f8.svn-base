@@ -1,0 +1,59 @@
+package com.ehualu.rise.dto;
+
+import java.sql.Date;
+
+/**
+ * 
+ * @author Administrator 用户表
+ */
+public class UserDto {
+	/**
+	 * 昵称
+	 */
+	private String nick;
+	/**
+	 * 创建时间
+	 */
+	private Date createDate;
+	/**
+	 * 电话号码
+	 */
+	private String phone;
+	/**
+	 * 密码
+	 */
+	private String password;
+
+	public String getNick() {
+		return nick;
+	}
+
+	public void setNick(String nick) {
+		this.nick = nick;
+	}
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+}

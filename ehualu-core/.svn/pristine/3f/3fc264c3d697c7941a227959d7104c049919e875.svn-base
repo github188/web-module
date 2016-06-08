@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ehualu.rise.dao.violate.ViolationDao">
+	<resultMap id="Violation" type="com.ehualu.rise.pojo.violate.Violation">
+		<id column="WFBH" property="wfbh" jdbcType="VARCHAR" />
+		<id column="JDSLB" property="jdslb" jdbcType="VARCHAR" />
+		<id column="JDSBH" property="jdsbh" jdbcType="VARCHAR" />
+		<id column="WSJYW" property="wsjyw" jdbcType="VARCHAR" />
+		<id column="RYFL" property="ryfl" jdbcType="CHAR" />
+		<id column="JSZH" property="jszh" jdbcType="VARCHAR" />
+		<id column="DABH" property="dabh" jdbcType="VARCHAR" />
+		<id column="FZJG" property="fzjg" jdbcType="VARCHAR" />
+		<id column="ZJCX" property="zjcx" jdbcType="VARCHAR" />
+		<id column="DSR" property="dsr" jdbcType="VARCHAR" />
+		
+		
+		<id column="ZSXZQH" property="zsxzqh" jdbcType="VARCHAR" />
+		<id column="ZSXXDZ" property="zsxxdz" jdbcType="VARCHAR" />
+		<id column="DH" property="dh" jdbcType="VARCHAR" />
+		<id column="LXFS" property="lxfs" jdbcType="VARCHAR" />
+		<id column="CLFL" property="clfl" jdbcType="CHAR" />
+		<id column="HPZL" property="hpzl" jdbcType="VARCHAR" />
+		<id column="HPHM" property="hphm" jdbcType="VARCHAR" />
+		<id column="JDCSYR" property="jdcsyr" jdbcType="VARCHAR" />
+		<id column="SYXZ" property="syxz" jdbcType="VARCHAR" />
+		<id column="JTFS" property="jtfs" jdbcType="VARCHAR" />
+		<id column="WFSJ" property="wfsj" jdbcType="DATE" />
+		<id column="WFDD" property="wfdd" jdbcType="VARCHAR" />
+		<id column="WFDZ" property="wfdz" jdbcType="VARCHAR" />
+		
+		
+		<id column="WFXW" property="wfxw" jdbcType="VARCHAR" />
+		<id column="WFJFS" property="wfjfs" jdbcType="NUMERIC" />
+		<id column="FKJE" property="fkje" jdbcType="NUMERIC" />
+		<id column="SCZ" property="scz" jdbcType="NUMERIC" />
+		<id column="BZZ" property="bzz" jdbcType="NUMERIC" />
+		<id column="ZNJ" property="znj" jdbcType="NUMERIC" />
+		<id column="ZQMJ" property="zqmj" jdbcType="VARCHAR" />
+		<id column="JKFS" property="jkfs" jdbcType="VARCHAR" />
+		<id column="FXJG" property="fxjg" jdbcType="VARCHAR" />
+		<id column="FXJGMC" property="fxjgmc" jdbcType="VARCHAR" />
+		<id column="CLJG" property="cljg" jdbcType="VARCHAR" />
+		
+		
+		<id column="CLJGMC" property="cljgmc" jdbcType="VARCHAR" />
+		<id column="CFZL" property="cfzl" jdbcType="VARCHAR" />
+		<id column="CLSJ" property="clsj" jdbcType="DATE" />
+		<id column="JKBJ" property="jkbj" jdbcType="VARCHAR" />
+		<id column="JKRQ" property="jkrq" jdbcType="DATE" />
+		<id column="PZBH" property="pzbh" jdbcType="VARCHAR" />
+		<id column="JSJQBJ" property="jsjqbj" jdbcType="VARCHAR" />
+		<id column="JLLX" property="jllx" jdbcType="VARCHAR" />
+		<id column="LRR" property="lrr" jdbcType="VARCHAR" />
+		<id column="LRSJ" property="lrsj" jdbcType="DATE" />
+		<id column="JBR1" property="jbr1" jdbcType="VARCHAR" />
+		
+		
+		<id column="JBR2" property="jbr2" jdbcType="VARCHAR" />
+		<id column="SGDJ" property="sgdj" jdbcType="CHAR" />
+		<id column="XXLY" property="xxly" jdbcType="CHAR" />
+		<id column="XRMS" property="xrms" jdbcType="CHAR" />
+		<id column="JSJG" property="jsjg" jdbcType="VARCHAR" />
+		<id column="GXSJ" property="gxsj" jdbcType="DATE" />
+		<id column="BZ" property="bz" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="ViolationComplex" type="com.ehualu.rise.pojo.violate.ViolationComplex">
+		<id column="JDSLB" property="jdslb" jdbcType="VARCHAR" />
+		<id column="LXFS" property="lxfs" jdbcType="VARCHAR" />
+		<id column="HPZL" property="hpzl" jdbcType="VARCHAR" />
+		<id column="JDCSYR" property="jdcsyr" jdbcType="VARCHAR" />
+		<id column="HPHM" property="hphm" jdbcType="VARCHAR" />
+		<id column="WFDD" property="wfdd" jdbcType="VARCHAR" />
+		<id column="WFDZ" property="wfdz" jdbcType="VARCHAR" />
+		<id column="WFSJ" property="wfsj" jdbcType="DATE" />
+		<id column="WFBH" property="wfbh" jdbcType="VARCHAR" />
+		<id column="WFXW" property="wfxw" jdbcType="VARCHAR" />
+		<id column="DSR" property="dsr" jdbcType="VARCHAR" />
+		<id column="CLSJ" property="clsj" jdbcType="DATE" />
+		<id column="FKJE" property="fkje" jdbcType="NUMERIC" />
+		<id column="JDSBH" property="jdsbh" jdbcType="VARCHAR" />
+		<id column="WFJFS" property="wfjfs" jdbcType="NUMERIC" />
+		
+		<id column="LRSJ" property="lrsj" jdbcType="DATE" />
+		<id column="XXLY" property="xxly" jdbcType="CHAR" />
+		<id column="ZNJ" property="znj" jdbcType="NUMERIC" />
+		<id column="JKFS" property="jkfs" jdbcType="VARCHAR" />
+		<id column="CLJG" property="cljg" jdbcType="VARCHAR" />
+		<id column="FXJG" property="fxjg" jdbcType="VARCHAR" />
+		<id column="CFZL" property="cfzl" jdbcType="VARCHAR" />
+		<id column="JKBJ" property="jkbj" jdbcType="VARCHAR" />
+		<id column="JSJG" property="jsjg" jdbcType="VARCHAR" />
+		<id column="GXSJ" property="gxsj" jdbcType="DATE" />
+	</resultMap>
+	<!-- 加密数据 -->
+	<resultMap id="ViolationEn" type="com.ehualu.rise.pojo.violate.ViolationEn">
+		<id column="WFBH" property="wfbh" jdbcType="VARCHAR" />
+		<id column="JDSLB" property="jdslb" jdbcType="VARCHAR" />
+		<id column="JDSBH" property="jdsbh" jdbcType="VARCHAR" />
+		<id column="WSJYW" property="wsjyw" jdbcType="VARCHAR" />
+		<id column="RYFL" property="ryfl" jdbcType="CHAR" />
+		<id column="JSZH" property="jszh" jdbcType="VARCHAR" />
+		<id column="DABH" property="dabh" jdbcType="VARCHAR" />
+		<id column="FZJG" property="fzjg" jdbcType="VARCHAR" />
+		<id column="ZJCX" property="zjcx" jdbcType="VARCHAR" />
+		<id column="DSR" property="dsr" jdbcType="VARCHAR" />
+		
+		
+		<id column="ZSXZQH" property="zsxzqh" jdbcType="VARCHAR" />
+		<id column="ZSXXDZ" property="zsxxdz" jdbcType="VARCHAR" />
+		<id column="DH" property="dh" jdbcType="VARCHAR" />
+		<id column="LXFS" property="lxfs" jdbcType="VARCHAR" />
+		<id column="CLFL" property="clfl" jdbcType="CHAR" />
+		<id column="HPZL" property="hpzl" jdbcType="VARCHAR" />
+		<id column="HPHM" property="hphm" jdbcType="VARCHAR" />
+		<id column="JDCSYR" property="jdcsyr" jdbcType="VARCHAR" />
+		<id column="SYXZ" property="syxz" jdbcType="VARCHAR" />
+		<id column="JTFS" property="jtfs" jdbcType="VARCHAR" />
+		<id column="WFSJ" property="wfsj" jdbcType="DATE" />
+		<id column="WFDD" property="wfdd" jdbcType="VARCHAR" />
+		<id column="WFDZ" property="wfdz" jdbcType="VARCHAR" />
+		
+		
+		<id column="WFXW" property="wfxw" jdbcType="VARCHAR" />
+		<id column="WFJFS" property="wfjfs" jdbcType="NUMERIC" />
+		<id column="FKJE" property="fkje" jdbcType="NUMERIC" />
+		<id column="SCZ" property="scz" jdbcType="NUMERIC" />
+		<id column="BZZ" property="bzz" jdbcType="NUMERIC" />
+		<id column="ZNJ" property="znj" jdbcType="NUMERIC" />
+		<id column="ZQMJ" property="zqmj" jdbcType="VARCHAR" />
+		<id column="JKFS" property="jkfs" jdbcType="VARCHAR" />
+		<id column="FXJG" property="fxjg" jdbcType="VARCHAR" />
+		<id column="FXJGMC" property="fxjgmc" jdbcType="VARCHAR" />
+		<id column="CLJG" property="cljg" jdbcType="VARCHAR" />
+		
+		
+		<id column="CLJGMC" property="cljgmc" jdbcType="VARCHAR" />
+		<id column="CFZL" property="cfzl" jdbcType="VARCHAR" />
+		<id column="CLSJ" property="clsj" jdbcType="DATE" />
+		<id column="JKBJ" property="jkbj" jdbcType="VARCHAR" />
+		<id column="JKRQ" property="jkrq" jdbcType="DATE" />
+		<id column="PZBH" property="pzbh" jdbcType="VARCHAR" />
+		<id column="JSJQBJ" property="jsjqbj" jdbcType="VARCHAR" />
+		<id column="JLLX" property="jllx" jdbcType="VARCHAR" />
+		<id column="LRR" property="lrr" jdbcType="VARCHAR" />
+		<id column="LRSJ" property="lrsj" jdbcType="DATE" />
+		<id column="JBR1" property="jbr1" jdbcType="VARCHAR" />
+		
+		
+		<id column="JBR2" property="jbr2" jdbcType="VARCHAR" />
+		<id column="SGDJ" property="sgdj" jdbcType="CHAR" />
+		<id column="XXLY" property="xxly" jdbcType="CHAR" />
+		<id column="XRMS" property="xrms" jdbcType="CHAR" />
+		<id column="JSJG" property="jsjg" jdbcType="VARCHAR" />
+		<id column="GXSJ" property="gxsj" jdbcType="DATE" />
+		<id column="BZ" property="bz" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="ViolationComplexEn" type="com.ehualu.rise.pojo.violate.ViolationComplexEn">
+		<id column="JDSLB" property="jdslb" jdbcType="VARCHAR" />
+		<id column="LXFS" property="lxfs" jdbcType="VARCHAR" />
+		<id column="HPZL" property="hpzl" jdbcType="VARCHAR" />
+		<id column="JDCSYR" property="jdcsyr" jdbcType="VARCHAR" />
+		<id column="HPHM" property="hphm" jdbcType="VARCHAR" />
+		<id column="WFDD" property="wfdd" jdbcType="VARCHAR" />
+		<id column="WFDZ" property="wfdz" jdbcType="VARCHAR" />
+		<id column="WFSJ" property="wfsj" jdbcType="VARCHAR" />
+		<id column="WFBH" property="wfbh" jdbcType="VARCHAR" />
+		<id column="WFXW" property="wfxw" jdbcType="VARCHAR" />
+		<id column="DSR" property="dsr" jdbcType="VARCHAR" />
+		<id column="CLSJ" property="clsj" jdbcType="VARCHAR" />
+		<id column="FKJE" property="fkje" jdbcType="VARCHAR" />
+		<id column="JDSBH" property="jdsbh" jdbcType="VARCHAR" />
+		<id column="WFJFS" property="wfjfs" jdbcType="VARCHAR" />
+		
+		<id column="LRSJ" property="lrsj" jdbcType="VARCHAR" />
+		<id column="XXLY" property="xxly" jdbcType="VARCHAR" />
+		<id column="ZNJ" property="znj" jdbcType="VARCHAR" />
+		<id column="JKFS" property="jkfs" jdbcType="VARCHAR" />
+		<id column="CLJG" property="cljg" jdbcType="VARCHAR" />
+		<id column="FXJG" property="fxjg" jdbcType="VARCHAR" />
+		<id column="CFZL" property="cfzl" jdbcType="VARCHAR" />
+		<id column="JKBJ" property="jkbj" jdbcType="VARCHAR" />
+		<id column="JSJG" property="jsjg" jdbcType="VARCHAR" />
+		<id column="GXSJ" property="gxsj" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<sql id="Base_Violation_List" >
+    WFBH, JDSLB, JDSBH, WSJYW, RYFL, JSZH, DABH, FZJG, ZJCX, DSR, ZSXZQH, ZSXXDZ, DH, 
+    LXFS, CLFL, HPZL, HPHM, JDCSYR, SYXZ, JTFS, WFSJ, WFDD, WFDZ, WFXW, WFJFS, FKJE, 
+    SCZ, BZZ, ZNJ, ZQMJ, JKFS, FXJG, FXJGMC, CLJG, CLJGMC, CFZL, CLSJ, JKBJ, JKRQ, PZBH, 
+    JSJQBJ, JLLX, LRR, LRSJ, JBR1, JBR2, SGDJ, XXLY, XRMS, JSJG, GXSJ, BZ
+  	</sql>
+	
+	<sql id="Base_ViolationComp_List" >
+		JDSLB, LXFS, HPZL, JDCSYR, HPHM, WFDD, WFDZ, WFSJ, WFBH, WFXW, DSR, 
+    	CLSJ, FKJE, JDSBH, WFJFS,LRSJ,XXLY,ZNJ,JKFS,CLJG,FXJG,
+	    CFZL,JKBJ,JSJG,GXSJ
+  	</sql>
+	
+	<!-- 通过驾驶证号查询（时间为次要条件），驾驶证违法信息 -->
+	<select id="queryViolationByJszh" parameterType="com.ehualu.rise.pojo.violate.Violation" resultMap="Violation">
+		select * from(select 
+		<include refid="Base_Violation_List"/>
+		from VIO_VIOLATION
+		where jszh=#{jszh}
+		<if test="wfsj != null">
+			and wfsj=#{wfsj}
+		</if>
+		order by wfsj desc) 
+		where 1=1 
+		<if test="num != 0">
+			and rownum &lt;=#{num} 		
+		</if>
+	</select>
+	
+	<!-- 通过号牌号码查询驾驶证违法信息,交款标记为未交款 #{jkbj}-->
+	<select id="queryViolationByHphm" parameterType="com.ehualu.rise.pojo.violate.ViolationComplex"  resultMap="ViolationComplex">
+		select <include refid="Base_ViolationComp_List"/>
+		from VIO_VIOLATION where hphm=#{hphm} and jkbj = '0'
+	</select>
+	
+	<!-- 通过决定书编号查询加密的驾驶证违章信息 -->
+	<select id="queryEnViolationByJdsbh" parameterType="com.ehualu.rise.pojo.violate.ViolationEn" resultMap="ViolationEn">
+		select <include refid="Base_Violation_List"/>
+		from VIO_VIOLATION_EN  where jdsbh_md5=#{jdsbh}
+	</select>
+	
+	<!-- 通过驾驶证号查询加密的驾驶证违法信息 -->
+	<select id="queryEnViolationByJszh" parameterType="com.ehualu.rise.pojo.violate.ViolationEn" resultMap="ViolationEn">
+		select <include refid="Base_Violation_List"/> 
+		from(select a.*,ROWNUM rn from(select t.*,t.rowid
+ 		from VIO_VIOLATION_EN t where t.jszh_md5=#{jszh} order by t.rowid desc) a 
+		where ROWNUM &lt;=(((page-1)*pageSize)+pageSize)) 
+		where rn>((page-1)*pageSize)
+	</select>
+	
+	<!-- 通过号牌号码查询加密驾驶证违法信息,交款标记为未交款 -->
+	<select id="queryEnViolationByHphm" parameterType="com.ehualu.rise.pojo.violate.ViolationComplexEn"  resultMap="ViolationComplexEn">
+		select <include refid="Base_ViolationComp_List"/>
+		from VIO_VIOLATION_EN where hphm_md5=#{hphm} and jkbj_md5 = #{jkbj}
+	</select>
+</mapper>

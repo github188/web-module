@@ -1,0 +1,109 @@
+package com.ehualu.rise.service.violate.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+
+import com.alibaba.fastjson.JSON;
+import com.ehualu.rise.constants.InterfaceConstant;
+import com.ehualu.rise.dao.violate.VehicleViolateDao;
+import com.ehualu.rise.dao.violate.ViolationDao;
+import com.ehualu.rise.pojo.msg.Msg;
+import com.ehualu.rise.pojo.violate.ViolationComplex;
+import com.ehualu.rise.property.PropertyConfig;
+import com.ehualu.rise.service.violate.ViolationComplexService;
+/**
+ * APP终端查询违法的业务处理
+ * @author Administrator
+ *
+ */
+@Service("violationComplexService")
+public class ViolationComplexServiceImpl implements ViolationComplexService {
+
+	private static final Logger logger = Logger.getLogger(ViolationComplexServiceImpl.class);
+	
+	private VehicleViolateDao vehicleViolateDao;
+	
+	private ViolationDao violationDao;
+	
+	
+	public VehicleViolateDao getVehicleViolateDao() {
+		return vehicleViolateDao;
+	}
+	@Inject
+	public void setVehicleViolateDao(VehicleViolateDao vehicleViolateDao) {
+		this.vehicleViolateDao = vehicleViolateDao;
+	}
+
+	public ViolationDao getViolationDao() {
+		return violationDao;
+	}
+	@Inject
+	public void setViolationDao(ViolationDao violationDao) {
+		this.violationDao = violationDao;
+	}
+
+
+
+
+	/**
+	 * 机动与驾驶证违法联合处理
+	 * @param jsonParam
+	 * @return
+	 */
+	public Msg queryViolationComplex(String paramJSON){
+		logger.info("paramJSON:"+paramJSON);
+		ViolationComplex vic = JSON.parseObject(paramJSON, ViolationComplex.class);
+		Msg msg = new Msg();
+		//判断参数是否为空
+		if(vic == null){
+			msg.setStatuCode(InterfaceConstant.PARAM_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("PARAM_IS_NULL"));
+			
+			logger.info("vic == null");
+			return msg;
+		}
+		//判断号牌号码是否为空
+		if(vic.getHphm() == null){
+			msg.setStatuCode("");
+			msg.setMsgBody(PropertyConfig.getProperty(""));
+			
+			logger.info("vic.getHphm() == null");
+			return msg;
+		}
+		List<ViolationComplex> list = new ArrayList<ViolationComplex>();
+		//查询机动车违法表
+		List<ViolationComplex> vicVehList = vehicleViolateDao.queryViolateByHphmClbj(vic);
+		for(int i=0;i<vicVehList.size();i++){
+			ViolationComplex vioComp = vicVehList.get(i);
+			vioComp.setSjly(0);
+			list.add(vioComp);
+		}
+		
+		//查询驾驶证违法表
+		List<ViolationComplex> vicSurList = violationDao.queryViolationByHphm(vic);
+		for(int i=0;i<vicSurList.size();i++){
+			ViolationComplex vioComp = vicSurList.get(i);
+			vioComp.setSjly(1);
+			list.add(vioComp);
+		}
+		
+		if(list.size() == 0){
+			msg.setStatuCode(InterfaceConstant.RESULT_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("RESULT_IS_NULL"));
+			
+			logger.info("ViolationComplex is null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		
+		msg.setMsgBody(list);
+		msg.setStatuCode(InterfaceConstant.STATU_SUCCESS);
+		
+		logger.info("RESULT:"+JSON.toJSONString(msg));
+		return msg;
+	}
+}

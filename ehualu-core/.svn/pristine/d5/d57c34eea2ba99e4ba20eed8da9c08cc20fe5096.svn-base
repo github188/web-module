@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ehualu.rise.dao.violate.VehicleDao">
+	<resultMap id="Vehicle" type="com.ehualu.rise.pojo.violate.Vehicle">
+		<result column="HPZL" property="hpzl" jdbcType="CHAR" />
+	    <result column="HPHM" property="hphm" jdbcType="VARCHAR" />
+	    <result column="XH" property="xh" jdbcType="CHAR" />
+	    <result column="CLPP1" property="clpp1" jdbcType="VARCHAR" />
+	    <result column="CLXH" property="clxh" jdbcType="VARCHAR" />
+	    <result column="CLSBDH" property="clsbdh" jdbcType="VARCHAR" />
+	    <result column="FDJH" property="fdjh" jdbcType="VARCHAR" />
+	    <result column="CLLX" property="cllx" jdbcType="CHAR" />
+	    <result column="CSYS" property="csys" jdbcType="VARCHAR" />
+	    <result column="SYXZ" property="syxz" jdbcType="CHAR" />
+	    <result column="SYR" property="syr" jdbcType="VARCHAR" />
+	    <result column="CCDJRQ" property="ccdjrq" jdbcType="DATE" />
+	    <result column="YXQZ" property="yxqz" jdbcType="DATE" />
+	    <result column="QZBFQZ" property="qzbfqz" jdbcType="DATE" />
+	    <result column="ZT" property="zt" jdbcType="VARCHAR" />
+	    <result column="FDJXH" property="fdjxh" jdbcType="VARCHAR" />
+	    <result column="RLZL" property="rlzl" jdbcType="VARCHAR" />
+	    <result column="PL" property="pl" jdbcType="DECIMAL" />
+	    <result column="GL" property="gl" jdbcType="DECIMAL" />
+	    <result column="ZS" property="zs" jdbcType="DECIMAL" />
+	    <result column="ZJ" property="zj" jdbcType="DECIMAL" />
+	    <result column="QLJ" property="qlj" jdbcType="DECIMAL" />
+	    <result column="HLJ" property="hlj" jdbcType="DECIMAL" />
+	    <result column="LTS" property="lts" jdbcType="DECIMAL" />
+	    <result column="ZZL" property="zzl" jdbcType="DECIMAL" />
+	    <result column="ZBZL" property="zbzl" jdbcType="DECIMAL" />
+	    <result column="HDZZL" property="hdzzl" jdbcType="DECIMAL" />
+	    <result column="HDZK" property="hdzk" jdbcType="DECIMAL" />
+	    <result column="CCRQ" property="ccrq" jdbcType="DATE" />
+	</resultMap>
+	
+	
+	<sql id="Base_Vehicle_List" >
+    	HPZL, HPHM, XH, CLPP1, CLXH, CLSBDH, FDJH, CLLX, CSYS, SYXZ, SYR, CCDJRQ, YXQZ, QZBFQZ, 
+    	ZT, FDJXH, RLZL, PL, GL, ZS, ZJ, QLJ, HLJ, LTS, ZZL, ZBZL, HDZZL, HDZK, CCRQ
+  	</sql>
+	<!-- 通过号牌号码查询机动车，参数为对象 -->
+	<select id="queryVehicleByHphm" parameterType="com.ehualu.rise.pojo.violate.Vehicle" resultMap="Vehicle">
+		select 
+		<include refid="Base_Vehicle_List"/>
+		from VEHICLE
+		where hphm=#{hphm}
+	</select>
+</mapper>

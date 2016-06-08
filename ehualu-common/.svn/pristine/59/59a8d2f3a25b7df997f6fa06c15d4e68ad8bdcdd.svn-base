@@ -1,0 +1,122 @@
+package com.ehualu.rise.constants;
+
+/**
+ * APP常量
+ * 
+ * @author Administrator
+ * 
+ */
+public class AppConstant {
+
+	// 包头
+	public static final String HEAD = "head";
+	// 包体
+	public static final String BODY = "body";
+	// 用户登录-登入
+	public static final int USERLOG_STATE_LOGIN = 0;
+	// 用户登录-登出
+	public static final int USERLOG_STATE_LOGOUT = 1;
+
+	// 用户状态-不可用
+	public static final String USER_STATE_INVALID = "0";
+	// 用户状态-可用
+	public static final String USER_STATE_VALID = "1";
+
+	/**
+	 * 公共执行标记代码 000 至 100为公共号段：
+	 */
+	public static final class ExecuteFlag {
+
+		// 成功状态
+		public static final String STATU_SUCCESS = "000";
+
+		// 协议号错误
+		public static final String XYH_IS_NULL = "001";
+
+		// 系统异常
+		public static final String SYSTEM_IS_EXCEPTION = "002";
+
+		// 包头错误
+		public static final String HEAD_IS_NULL = "003";
+
+		// 包体错误
+		public static final String BODY_IS_NULL = "004";
+
+		// 网络错误
+		public static final String NETWORK_IS_EXCEPTION = "005";
+
+		// 查询结果集为空
+		public static final String RESULT_IS_NULL = "006";
+
+		// 协议解析错误
+		public static final String PROTOCOL_IS_ERROR = "007";
+
+		// interface验证签名失败
+		public static final String SIGN_VERIFY_WRONG_INTERFACE = "008";
+
+		// appServer验证签名失败
+		public static final String SIGN_VERIFY_WRONG_APPSERVER = "009";
+	}
+
+	// 登陆
+	public static final class Code_01 {
+		// 用户名或密码错误
+		public static final String USER_PWD_IS_WRONG = "101";
+		// 密码加密错误
+		// public static final String PWD_JIAMI_FAIL = "102";
+		// 老用户名或密码错误
+		public static final String OLD_PWD_IS_WRONG = "102";
+		// 用户反馈失败
+		public static final String USER_FEEDBACK_ERROR = "103";
+		// 验证码验证失败
+		public static final String VERIFICATIONCODE_ERROR = "104";
+		// 用户注册失败
+		public static final String USER_REGISTER_ERROR = "105";
+
+	}
+
+	public static final class Code_06 {
+		// 查询条件为空
+		public static final String HPHM_HPZL_IS_NULL = "601";
+
+		// 号牌号码为空
+		public static final String HPHM_IS_NULL = "602";
+
+		// 号牌种类为空
+		public static final String HPZL_IS_NULL = "603";
+
+		// 发动机号为空
+		public static final String FDJH_IS_NULL = "604";
+
+		// 号牌种类不匹配
+		public static final String HPZL_NO_MATCH = "605";
+
+		// 发动机号不匹配
+		public static final String FDJH_NO_MATCH = "606";
+
+		// 结果集中发动机号为空
+		public static final String FDJH_RESULT_NULL = "607";
+	}
+
+	/** 用户协议 **/
+	// 登陆协议
+	public static final String SERVICE_CODE_LOGIN = "0101";
+	// 修改密码
+	public static final String SERVICE_CODE_CHANGEPASSWORD = "0102";
+	// 用户注册
+	public static final String SERVICE_CODE_REGISTER = "0103";
+	// 发送验证码
+	public static final String SERVICE_CODE_VERIFICATIONCODE = "0104";
+	// 用户反馈
+	public static final String SERVICE_CODE_FEEDBACK = "0105";
+
+	/** 咨询广告协议 **/
+	// 获取咨询广告
+	public static final String SERVICE_CODE_QUERYTOPIC = "0501";
+	/** 查询协议 **/
+	// 机动车违法查询
+	public static final String SERVICE_CODE_QUERY_JDC_VEHICLE = "0601";
+
+	// 系统错误提示协议
+	public static final String SERVICE_CODE_SYSTEM = "9999";
+}

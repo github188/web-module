@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ehualu.rise.dao.violate.DrivingLicenseDao">
+	<resultMap id="DrivingLicense" type="com.ehualu.rise.pojo.violate.DrivingLicense">
+		<id column="DABH" property="dabh" jdbcType="VARCHAR" />
+		<id column="SFZMHM" property="sfzmhm" jdbcType="VARCHAR" />
+		<id column="ZJCX" property="zjcx" jdbcType="VARCHAR" />
+		<id column="SYRQ" property="syrq" jdbcType="VARCHAR" />
+		<id column="CCLZRQ" property="cclzrq" jdbcType="VARCHAR" />
+		<id column="YXQS" property="yxqs" jdbcType="VARCHAR" />
+		<id column="YXQZ" property="yxqz" jdbcType="VARCHAR" />
+		<id column="LJJF" property="ljjf" jdbcType="VARCHAR" />
+		<id column="ZT" property="zt" jdbcType="DATE" />
+		<id column="XZQH" property="xzqh" jdbcType="VARCHAR" />
+		<id column="FZJG" property="fzjg" jdbcType="VARCHAR" />
+		<id column="GXSJ" property="gxsj" jdbcType="VARCHAR" />
+		
+		<id column="ZXBH" property="zxbh" jdbcType="VARCHAR" />
+		<id column="SFZMMC" property="sfzmmc" jdbcType="VARCHAR" />
+		<id column="HMCD" property="hmcd" jdbcType="VARCHAR" />
+		<id column="XM" property="xm" jdbcType="DATE" />
+		<id column="XB" property="xb" jdbcType="NUMERIC" />
+		<id column="CSRQ" property="csrq" jdbcType="VARCHAR" />
+		<id column="GJ" property="gj" jdbcType="NUMERIC" />
+		<id column="DJZSXZQH" property="djzsxzqh" jdbcType="VARCHAR" />
+		<id column="DJZSXXDZ" property="djzsxxdz" jdbcType="VARCHAR" />
+		
+		<id column="LXZSXZQH" property="lxzsxzqh" jdbcType="VARCHAR" />
+		<id column="LXZSXXDZ" property="lxzsxxdz" jdbcType="VARCHAR" />
+		<id column="LXZSYZBM" property="lxzsyzbm" jdbcType="NUMERIC" />
+		<id column="LXDH" property="lxdh" jdbcType="VARCHAR" />
+		<id column="SJHM" property="sjhm" jdbcType="VARCHAR" />
+		<id column="DZYX" property="dzyx" jdbcType="VARCHAR" />
+		<id column="ZZZM" property="zzzm" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	
+	<sql id="Base_DrivingLicense_List" >
+    DABH, SFZMHM, ZJCX, SYRQ, CCLZRQ, YXQS, YXQZ, LJJF, ZT, XZQH, FZJG, GXSJ, ZXBH, SFZMMC, 
+    HMCD, XM, XB, CSRQ, GJ, DJZSXZQH, DJZSXXDZ, LXZSXZQH, LXZSXXDZ, LXZSYZBM, LXDH, SJHM, 
+    DZYX, ZZZM
+  </sql>
+	<!-- 通过身份证号查询驾驶证-->
+	<select id="queryLicenseBySfzmhm" parameterType="com.ehualu.rise.pojo.violate.DrivingLicense" resultMap="DrivingLicense">
+		select 
+		<include refid="Base_DrivingLicense_List"/>
+		from DRIVINGLICENSE
+		where sfzmhm=#{sfzmhm}
+	</select>
+</mapper>

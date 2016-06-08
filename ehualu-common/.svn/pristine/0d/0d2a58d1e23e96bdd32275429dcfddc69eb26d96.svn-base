@@ -1,0 +1,65 @@
+package com.ehualu.rise.util;
+
+import java.io.IOException;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+
+import sun.misc.BASE64Decoder;
+
+
+/**
+ * @author Administrator smil工具类
+ */
+@SuppressWarnings("restriction")
+public class SmilUtil {
+
+	private static BASE64Decoder decoder = new BASE64Decoder();
+	//使用本地文件编辑
+
+	public static String  insertElement(String[] fileName,String subject,String phone,String chid,String spnumber)
+			throws DocumentException, IOException {
+		Document document = DocumentHelper.createDocument();
+		Element root=document.addElement("mms");
+		root.addElement("subject").addText(subject);
+		root.addElement("phone").addText(phone);
+		root.addElement("chid").addText(chid);
+		root.addElement("spnumber").addText(spnumber);
+		Element body = root.addElement("pages");
+		for(String str:fileName){
+			Element page=body.addElement("page").addAttribute("dur", "10");
+			for(String tp:str.split(",")){
+				String type=tp.substring(tp.lastIndexOf(".") + 1).toLowerCase();
+				if(type.equals("txt"))
+					page.addElement("text").addText(EncoderBase64.getContent(tp,"text"));
+				else{
+					page.addElement("img").addAttribute("type",type).addText(EncoderBase64.getContent(tp,"gif"));
+				}
+			}
+		}
+		return document.asXML();
+	}
+	//使用数据库中已经编码的内容编辑
+	public static String insertElement(String deco,String subject) throws DocumentException, IOException{
+		Document document = DocumentHelper.createDocument();
+		Element root=document.addElement("mms");
+		root.addElement("subject").addText(subject);
+		Element body = root.addElement("pages");
+		String[] subObject=deco.split(";");
+		for(String str:subObject){
+			String[] sub=str.split(",");
+			Element page=body.addElement("page").addAttribute("dur", "10");
+			String type=sub[1].toLowerCase();
+			if(type.equals("txt"))
+				page.addElement("text").addText(new String(decoder.decodeBuffer(sub[2])));
+			else{
+				if(type.equals("jpg"))
+					type="jpeg";
+				page.addElement("img").addAttribute("type", "image/"+type).addText(sub[2]);
+			}
+		}
+		return document.asXML();
+	}
+}

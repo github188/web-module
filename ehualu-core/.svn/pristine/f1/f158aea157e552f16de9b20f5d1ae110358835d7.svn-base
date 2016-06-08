@@ -1,0 +1,381 @@
+package com.ehualu.rise.service.violate.impl;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+
+import com.alibaba.fastjson.JSON;
+import com.ehualu.rise.constants.InterfaceConstant;
+import com.ehualu.rise.dao.violate.VehicleViolateDao;
+import com.ehualu.rise.pojo.msg.Msg;
+import com.ehualu.rise.pojo.violate.VehicleViolate;
+import com.ehualu.rise.pojo.violate.VehicleViolateEn;
+import com.ehualu.rise.property.PropertyConfig;
+import com.ehualu.rise.service.violate.VehicleViolateService;
+import com.ehualu.rise.util.SecurityUtil;
+/**
+ * 
+ * @author Administrator
+ * 车辆违法接口实现
+ */
+@Service("vehicleViolateService")
+public class VehicleViolateServiceImpl implements VehicleViolateService {
+
+	private static final Logger logger = Logger.getLogger(VehicleViolateServiceImpl.class);
+	
+	private VehicleViolateDao vehicleViolateDao;
+	
+	
+	public VehicleViolateDao getVehicleViolateDao() {
+		return vehicleViolateDao;
+	}
+
+	@Inject
+	public void setVehicleViolateDao(VehicleViolateDao vehicleViolateDao) {
+		this.vehicleViolateDao = vehicleViolateDao;
+	}
+	
+	/**
+	 * 查询车辆违法信息
+	 * @param paramJSON
+	 * @return
+	 */
+	public Msg queryVehicleViolate(String paramJSON){
+		logger.info("paramJSON:"+paramJSON);
+		VehicleViolate vehVio = JSON.parseObject(paramJSON, VehicleViolate.class);
+		Msg msg = new Msg();
+		//判断参数是否为空
+		if(vehVio == null){
+			msg.setStatuCode(InterfaceConstant.PARAM_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("PARAM_IS_NULL"));
+			logger.info("vehVio == null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		//判断参数中号牌号码是否为空
+		if(vehVio.getHphm() == null){
+			msg.setStatuCode(InterfaceConstant.Code_001.HPHM_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("HPHM_IS_NULL"));
+			logger.info("vehVio.getHphm() == null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		//查询违法信息
+		List<VehicleViolate> list = vehicleViolateDao.queryByHphm(vehVio.getHphm());
+		if(list.size() == 0){
+			msg.setStatuCode(InterfaceConstant.RESULT_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("RESULT_IS_NULL"));
+			logger.info("VehicleViolate is null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		//判断号牌种类
+		if(!(vehVio.getHpzl()).equals(list.get(0).getHpzl())){
+			msg.setStatuCode(InterfaceConstant.Code_001.HPZL_NO_MATCH);
+			msg.setMsgBody(PropertyConfig.getProperty("HPZL_NO_MATCH"));
+			logger.info("HPZL IS NOT MATCH:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		String fdjh=null;//发动机号
+		for(int i=0;i<list.size();i++){
+			if(list.get(i).getFdjh() != null){
+				fdjh = list.get(i).getFdjh();
+				break;
+			}
+		}
+		//判断结果集中发动机号是否为空
+		if(fdjh == null){
+			msg.setStatuCode(InterfaceConstant.Code_001.FDJH_RESULT_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("FDJH_RESULT_NULL"));
+			logger.info("FDJH RESULT NULL:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		//判断发动机号
+		if(!(vehVio.getFdjh()).equals(fdjh.substring(fdjh.length()-6, fdjh.length()))){
+			msg.setStatuCode(InterfaceConstant.Code_001.FDJH_NO_MATCH);
+			msg.setMsgBody(PropertyConfig.getProperty("FDJH_NO_MATCH"));
+			logger.info("FDJH IS NOT MATCH:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		msg.setMsgBody(list);
+		msg.setStatuCode(InterfaceConstant.STATU_SUCCESS);
+		
+		logger.info("RESULT:"+JSON.toJSONString(msg));
+		return msg;
+	}
+	
+	
+	/**
+	 * 根据号牌号码查询机动车违法(通过时间点，结果集数量)
+	 * @param paramJson
+	 * @return
+	 */
+	public Msg queryViolateByHphm(String paramJson){
+		logger.info("paramJSON:"+paramJson);
+		VehicleViolate vehVio = JSON.parseObject(paramJson, VehicleViolate.class);
+		Msg msg = new Msg();
+		//判断参数是否为空
+		if(vehVio == null){
+			msg.setStatuCode(InterfaceConstant.PARAM_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("PARAM_IS_NULL"));
+			logger.info("vehVio == null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		//判断参数中号牌号码是否为空
+		if(vehVio.getHphm() == null || (vehVio.getHphm()).equals("")){
+			msg.setStatuCode(InterfaceConstant.Code_001.HPHM_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("HPHM_IS_NULL"));
+			logger.info("vehVio.getHphm() == null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		
+		//判断参数中号牌种类是否为空
+		if(vehVio.getHpzl() == null || (vehVio.getHpzl()).equals("")){
+			msg.setStatuCode(InterfaceConstant.Code_001.HPZL_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("HPZL_IS_NULL"));
+			logger.info("vehVio.getHpzl() == null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		
+		//判断参数中号牌种类是否为空
+		if(vehVio.getFdjh() == null || (vehVio.getFdjh()).equals("")){
+			msg.setStatuCode(InterfaceConstant.Code_001.FDJH_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("FDJH_IS_NULL"));
+			logger.info("vehVio.getFdjh() == null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		//查询违法信息
+		List<VehicleViolate> list = vehicleViolateDao.queryViolateByHphm(vehVio);
+		if(list.size() == 0){
+			msg.setStatuCode(InterfaceConstant.RESULT_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("RESULT_IS_NULL"));
+			logger.info("VehicleViolate is null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		//判断号牌种类
+		if(!(vehVio.getHpzl()).equals(list.get(0).getHpzl())){
+			msg.setStatuCode(InterfaceConstant.Code_001.HPZL_NO_MATCH);
+			msg.setMsgBody(PropertyConfig.getProperty("HPZL_NO_MATCH"));
+			logger.info("HPZL IS NOT MATCH:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		String fdjh=null;//发动机号
+		for(int i=0;i<list.size();i++){
+			if(list.get(i).getFdjh() != null){
+				fdjh = list.get(i).getFdjh();
+				break;
+			}
+		}
+		//判断结果集中发动机号是否为空
+		if(fdjh == null){
+			msg.setStatuCode(InterfaceConstant.Code_001.FDJH_RESULT_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("FDJH_RESULT_NULL"));
+			logger.info("FDJH RESULT NULL:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		//判断发动机号
+		if(!(vehVio.getFdjh()).equals(fdjh.substring(fdjh.length()-6, fdjh.length()))){
+			msg.setStatuCode(InterfaceConstant.Code_001.FDJH_NO_MATCH);
+			msg.setMsgBody(PropertyConfig.getProperty("FDJH_NO_MATCH"));
+			logger.info("FDJH IS NOT MATCH:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		msg.setMsgBody(list);
+		msg.setStatuCode(InterfaceConstant.STATU_SUCCESS);
+		
+		logger.info("RESULT:"+JSON.toJSONString(msg));
+		return msg;
+	}
+	
+	/**
+	 * 通过号牌号码查询加密机动车违法信息参数为对象
+	 * @param paramJson
+	 * @return
+	 */
+	public Msg queryEnViolateByHphm(String paramJson){
+		logger.info("paramJSON:"+paramJson);
+		VehicleViolateEn vehVioEn = JSON.parseObject(paramJson, VehicleViolateEn.class);
+		Msg msg = new Msg();
+		//判断参数是否为空
+		if(vehVioEn == null){
+			msg.setStatuCode(InterfaceConstant.PARAM_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("PARAM_IS_NULL"));
+			logger.info("vehVio == null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		//判断参数中号牌号码是否为空
+		if(vehVioEn.getHphm() == null || (vehVioEn.getHphm()).equals("")){
+			msg.setStatuCode(InterfaceConstant.Code_001.HPHM_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("HPHM_IS_NULL"));
+			logger.info("vehVio.getHphm() == null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+//		
+//		//判断参数中号牌种类是否为空
+//		if(vehVioEn.getHpzl() == null || (vehVioEn.getHpzl()).equals("")){
+//			msg.setStatuCode(InterfaceConstant.Code_001.HPZL_IS_NULL);
+//			msg.setMsgBody(PropertyConfig.getProperty("HPZL_IS_NULL"));
+//			logger.info("vehVio.getHpzl() == null:"+JSON.toJSONString(msg));
+//			return msg;
+//		}
+//		
+//		//判断参数中号牌种类是否为空
+//		if(vehVioEn.getFdjh() == null || (vehVioEn.getFdjh()).equals("")){
+//			msg.setStatuCode(InterfaceConstant.Code_001.FDJH_IS_NULL);
+//			msg.setMsgBody(PropertyConfig.getProperty("FDJH_IS_NULL"));
+//			logger.info("vehVio.getFdjh() == null:"+JSON.toJSONString(msg));
+//			return msg;
+//		}
+		//查询违法信息
+		List<VehicleViolateEn> listEn = vehicleViolateDao.queryEnViolateByHphm(vehVioEn);
+		if(listEn.size() == 0){
+			msg.setStatuCode(InterfaceConstant.RESULT_IS_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("RESULT_IS_NULL"));
+			logger.info("VehicleViolate is null:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		
+		List<VehicleViolate> list = new ArrayList<VehicleViolate>();
+		//数据类型转换
+		for(int i=0;i<listEn.size();i++){
+			VehicleViolateEn vlvEn = listEn.get(i);
+			VehicleViolate vlv = createVehicleViolate(vlvEn);
+			list.add(vlv);
+		}
+		
+		String fdjh=null;//发动机号
+		String hpzl=null;//号牌号码
+		for(int i=0;i<list.size();i++){
+			if(list.get(i).getFdjh() != null){
+				fdjh = list.get(i).getFdjh();
+				break;
+			}
+		}
+		
+		for(int i=0;i<list.size();i++){
+			if(list.get(i).getHpzl() != null){
+				hpzl = list.get(i).getHpzl();
+				break;
+			}
+		}
+		
+		//判断号牌种类
+		if(hpzl == null){
+			msg.setStatuCode(InterfaceConstant.Code_001.HPZL_RESULT_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("HPZL_RESULT_NULL"));
+			logger.info("HPZL RESULT NULL:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		if(vehVioEn.getHpzl() != null){
+			if(!(vehVioEn.getHpzl()).equals(hpzl)){
+				msg.setStatuCode(InterfaceConstant.Code_001.HPZL_NO_MATCH);
+				msg.setMsgBody(PropertyConfig.getProperty("HPZL_NO_MATCH"));
+				logger.info("HPZL IS NOT MATCH:"+JSON.toJSONString(msg));
+				return msg;
+			}
+		}
+		
+		//判断结果集中发动机号是否为空
+		if(fdjh == null){
+			msg.setStatuCode(InterfaceConstant.Code_001.FDJH_RESULT_NULL);
+			msg.setMsgBody(PropertyConfig.getProperty("FDJH_RESULT_NULL"));
+			logger.info("FDJH RESULT NULL:"+JSON.toJSONString(msg));
+			return msg;
+		}
+		//判断发动机号
+		if(vehVioEn.getFdjh() != null){
+			if(!(vehVioEn.getFdjh()).equals(fdjh.substring(fdjh.length()-vehVioEn.getFdjh().length(), fdjh.length()))){
+				msg.setStatuCode(InterfaceConstant.Code_001.FDJH_NO_MATCH);
+				msg.setMsgBody(PropertyConfig.getProperty("FDJH_NO_MATCH"));
+				logger.info("FDJH IS NOT MATCH:"+JSON.toJSONString(msg));
+				return msg;
+			}
+		}
+		msg.setMsgBody(list);
+		msg.setStatuCode(InterfaceConstant.STATU_SUCCESS);
+		
+		logger.info("RESULT:"+JSON.toJSONString(msg));
+		return msg;
+	}
+	
+	/**
+	 * 转换数据类型
+	 * @param vcEn
+	 * @return
+	 */
+	private VehicleViolate createVehicleViolate(VehicleViolateEn vlvEn){
+		//设置时间格式
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		//解密秘钥
+		String secretKey = PropertyConfig.getProperty("AES_SECRET_KEY");
+		
+		String xhStr = SecurityUtil.decrypt(vlvEn.getXh(), secretKey);
+		String jdslbStr = SecurityUtil.decrypt(vlvEn.getJdslb(), secretKey);
+		String lxfsStr = SecurityUtil.decrypt(vlvEn.getLxfs(), secretKey);
+		String hpzlStr = SecurityUtil.decrypt(vlvEn.getHpzl(), secretKey);
+		String jdcsyrStr = SecurityUtil.decrypt(vlvEn.getJdcsyr(), secretKey);
+		String hphmStr = SecurityUtil.decrypt(vlvEn.getHphm(), secretKey);
+		String fdjhStr = SecurityUtil.decrypt(vlvEn.getFdjh(), secretKey).trim();
+		String tzshStr = SecurityUtil.decrypt(vlvEn.getTzsh(), secretKey);
+		
+		logger.info("xhStr="+xhStr);
+		logger.info("jdslbStr="+jdslbStr);
+		logger.info("lxfsStr="+lxfsStr);
+		logger.info("hpzlStr="+hpzlStr);
+		logger.info("jdcsyrStr="+jdcsyrStr);
+		logger.info("hphmStr="+hphmStr);
+		logger.info("fdjhStr="+fdjhStr);
+		logger.info("tzshStr="+tzshStr);
+		
+		String wfddStr = SecurityUtil.decrypt(vlvEn.getWfdd(), secretKey);
+		String wfdzStr = SecurityUtil.decrypt(vlvEn.getWfdz(), secretKey);
+		String wfsjStr = SecurityUtil.decrypt(vlvEn.getWfsj(), secretKey);
+		String wfbhStr = SecurityUtil.decrypt(vlvEn.getWfbh(), secretKey);
+		String wfxwStr = SecurityUtil.decrypt(vlvEn.getWfxw(), secretKey);
+		String xzqhStr = SecurityUtil.decrypt(vlvEn.getXzqh(), secretKey);
+		String dsrStr = SecurityUtil.decrypt(vlvEn.getDsr(), secretKey);
+		String fzjgStr = SecurityUtil.decrypt(vlvEn.getFzjg(), secretKey);
+		
+		logger.info("wfddStr="+wfddStr);
+		logger.info("wfdzStr="+wfdzStr);
+		logger.info("wfsjStr="+wfsjStr);
+		logger.info("wfbhStr="+wfbhStr);
+		logger.info("wfxwStr="+wfxwStr);
+		logger.info("xzqhStr="+xzqhStr);
+		logger.info("dsrStr="+dsrStr);
+		logger.info("fzjgStr="+fzjgStr);
+		
+		
+		String dhStr = SecurityUtil.decrypt(vlvEn.getDh(), secretKey).trim();
+		String clsjStr = SecurityUtil.decrypt(vlvEn.getClsj(), secretKey).trim();
+		String fkjeStr = SecurityUtil.decrypt(vlvEn.getFkje(), secretKey).trim();
+		String jdsbhStr = SecurityUtil.decrypt(vlvEn.getJdsbh(), secretKey);
+		String wfjfsStr = SecurityUtil.decrypt(vlvEn.getWfjfs(), secretKey).trim();
+		String cjjgStr = SecurityUtil.decrypt(vlvEn.getCjjg(), secretKey).trim();
+		String clbjStr = SecurityUtil.decrypt(vlvEn.getClbj(), secretKey).trim();
+		String clsbdhStr = SecurityUtil.decrypt(vlvEn.getClsbdh(), secretKey).trim();
+		String znjStr = SecurityUtil.decrypt(vlvEn.getZnj(), secretKey).trim();
+		
+		logger.info("clsjStr="+clsjStr);
+		logger.info("fkjeStr="+fkjeStr);
+		logger.info("jdsbhStr="+jdsbhStr);
+		logger.info("wfjfsStr="+wfjfsStr);
+		logger.info("cjjgStr"+cjjgStr);
+		logger.info("clbjStr="+clbjStr);
+		logger.info("clsbdhStr="+clsbdhStr);
+		logger.info("znjStr="+znjStr);
+		try {
+			VehicleViolate vehicleViolate = new VehicleViolate(xhStr, jdslbStr, lxfsStr, hpzlStr, 
+					jdcsyrStr, hphmStr, fdjhStr, wfddStr, wfdzStr, 
+					sdf.parse(wfsjStr), wfbhStr, wfxwStr, xzqhStr, dsrStr, 
+					fzjgStr, dhStr, sdf.parse(clsjStr), Double.parseDouble((fkjeStr == null || fkjeStr.trim().equals("")?"0":fkjeStr)), jdsbhStr, 
+					Double.parseDouble((wfjfsStr == null || wfjfsStr.trim().equals("")?"0":wfjfsStr)), cjjgStr, clbjStr, clsbdhStr, Double.parseDouble((znjStr == null || znjStr.trim().equals("")?"0":znjStr))); 
+			return vehicleViolate;
+		} catch (Exception e) {
+			logger.info(e);
+			return null;
+		}
+	}
+}
